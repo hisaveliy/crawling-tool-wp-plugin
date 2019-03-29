@@ -1,0 +1,13 @@
+{
+   "name": "wp_plugin_starter",
+   "version": "1.0.0",
+   "description": "",
+   "autoload": {
+      "classmap": [
+         "src/php"
+      ]
+   },
+   "require-dev": {
+      "phpunit/phpunit": "^7"
+   }
+}
