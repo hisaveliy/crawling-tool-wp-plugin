@@ -171,7 +171,7 @@ class Core {
    */
   public static function on_activation(){
 
-    if(version_compare(phpversion(), '7.0', '<')){
+    if (version_compare(phpversion(), '7.0', '<')){
       wp_die(sprintf(
         __('Your server must have at least PHP 7.0! Please upgrade! %sGo back%s', 'savellab'),
         '<a href="'.admin_url('plugins.php').'">',
@@ -179,7 +179,7 @@ class Core {
       ));
     }
 
-    if(version_compare(get_bloginfo('version'), '4.5', '<')){
+    if (version_compare(get_bloginfo('version'), '4.5', '<')){
       wp_die(sprintf(
         __('You need at least Wordpress 4.5! Please upgrade! %sGo back%s', 'savellab'),
         '<a href="'.admin_url('plugins.php').'">',

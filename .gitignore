@@ -2,6 +2,8 @@
 /npm-debug.log
 /dist
 /vendor
+/includes
+/assets
 /.vscode
 /.idea
 /.DS_Store
