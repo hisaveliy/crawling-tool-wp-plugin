@@ -91,12 +91,11 @@ class Core {
 
 
   /**
-   * Inlcude all files with "class-" prefix
+   * Includes all files with "class-" prefix
    *
    * @since 1.0.0
-   * @param $filename
    */
-  public static function autoload($filename){
+  public static function autoload(){
 
     $dir = PLUGIN_DIR . '/autoload/class-*.php';
     $paths = glob('{'.$dir.'}', GLOB_BRACE);

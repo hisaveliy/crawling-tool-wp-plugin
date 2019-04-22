@@ -21,7 +21,6 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
-
 define(__NAMESPACE__ . '\PREFIX', 'svlb');
 
 define(__NAMESPACE__ . '\PLUGIN_VERSION', '1.0.0');

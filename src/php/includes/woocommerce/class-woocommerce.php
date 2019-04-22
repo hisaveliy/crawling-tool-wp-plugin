@@ -7,62 +7,61 @@
 
 namespace Savellab_Plugin;
 
+class Woocommerce {
 
-class Woocommerce{
+	protected static $instance = null;
 
-  protected static $instance = null;
+	/**
+	 * Return an instance of this class.
+	 *
+	 * @since     1.0.0
+	 *
+	 * @return    object    A single instance of this class.
+	 */
+	public static function instance() {
 
-  /**
-   * Return an instance of this class.
-   *
-   * @since     1.0.0
-   *
-   * @return    object    A single instance of this class.
-   */
-  public static function instance() {
+		// If the single instance hasn't been set, set it now.
+		if ( null == self::$instance ) {
+			self::$instance = new self;
+		}
 
-    // If the single instance hasn't been set, set it now.
-    if ( null == self::$instance ) {
-      self::$instance = new self;
-    }
-
-    return self::$instance;
-  }
-
+		return self::$instance;
+	}
 
 
-  /**
-   * @since 1.0.0
-   */
-  public function __construct(){
 
-    add_action('init', __CLASS__ . '::run_on_init');
+	/**
+	 * @since 1.0.0
+	 */
+	public function __construct(){
 
-  }
+		add_action('init', __CLASS__ . '::run_on_init');
 
-  /**
-   * Runs after WordPress has finished loading but before any headers are sent
-   *
-   * @since 1.0.0
-   * @return void
-   */
-  public static function run_on_init(){
+	}
 
-    if(class_exists('\WooCommerce')){
+	/**
+	 * Runs after WordPress has finished loading but before any headers are sent
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public static function run_on_init(){
 
-        include_once PLUGIN_DIR . '/includes/woocommerce/class-settings.php';
+		if(class_exists('\WooCommerce')){
 
-    }else{
+			include_once PLUGIN_DIR . '/includes/woocommerce/class-settings.php';
 
-      Utility::show_notice(sprintf(
-        __('%s plugin requires %sWooCommerce%s plugin to be installed and active!'),
-        '<b>'.PLUGIN_NAME.'</b>',
-        '<a href="https://woocommerce.com" target="_blank">',
-        '</a>'
-      ), 'error');
+		}else{
 
-    }
-  }
+			Utility::show_notice(sprintf(
+				__('%s plugin requires %sWooCommerce%s plugin to be installed and active!'),
+				'<b>'.PLUGIN_NAME.'</b>',
+				'<a href="https://woocommerce.com" target="_blank">',
+				'</a>'
+			), 'error');
+
+		}
+	}
 
 }
 Woocommerce::instance();
