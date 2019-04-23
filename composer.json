@@ -4,7 +4,7 @@
    "description": "",
    "autoload": {
       "classmap": [
-         "src/php"
+         "includes"
       ]
    },
    "require-dev": {
