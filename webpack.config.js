@@ -133,17 +133,8 @@ module.exports = (env, argv) => {
         }
       }),
 
-      new ExtraWatchWebpackPlugin({
-        // files: [ 'path/to/file', 'src/**/*.json' ],
-        dirs: [
-          SRC_DIR + '/php'
-        ],
-      }),
-
       new EventHooksPlugin({
         'afterEmit': (done) => {
-
-          fs.copySync(SRC_DIR + '/php/', DIST_DIR);
 
           console.log('\x1b[32m%s\x1b[0m', '---------------------------------------------------------------------------------------');
           console.log('\x1b[32m%s\x1b[0m', '> Synced DIST folder `' + pluginName + '` [' + new Date() + ']');
