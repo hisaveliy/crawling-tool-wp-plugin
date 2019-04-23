@@ -1,9 +1,9 @@
 /node_modules
 /npm-debug.log
 /dist
-/vendor
-/includes
 /assets
 /.vscode
 /.idea
 /.DS_Store
+src/.DS_Store
+
