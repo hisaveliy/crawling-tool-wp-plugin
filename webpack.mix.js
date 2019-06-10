@@ -11,7 +11,8 @@ let mix = require('laravel-mix');
  |
  */
 
-mix.js('src/js/app.js', 'assets/js/admin.min.js').sass('src/scss/admin.scss', 'assets/css/admin.min.css');
+mix.js('src/js/app.js', 'assets/js/admin.min.js').js('src/js/frontend.js', 'assets/js/frontend.min.js')
+    .sass('src/scss/admin.scss', 'assets/css/admin.min.css').sass('src/scss/frontend.scss', 'assets/css/frontend.min.css');
 
 // Full API
 // mix.js(src, output);
