@@ -5,7 +5,7 @@
  * @since      1.0.0
  */
 
-namespace Savellab_Plugin;
+namespace Plugin_Scope;
 
 
 class Assets{
@@ -93,7 +93,7 @@ class Assets{
     * @since 1.0.0
     * @return void
     */
-   public static function frontend_scripts(){
+   public static function frontend_scripts() {
 
       wp_enqueue_script(
          __NAMESPACE__ . '_frontend',

@@ -6,7 +6,7 @@
  * Time: 5:50 PM
  */
 
-namespace Savellab_Plugin;
+namespace Plugin_Scope;
 
 class Shortcodes {
 

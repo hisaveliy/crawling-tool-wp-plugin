@@ -5,7 +5,7 @@
  * @since      1.0.0
  */
 
-namespace Savellab_Plugin;
+namespace Plugin_Scope;
 
 abstract class Abstract_Settings_Page {
 

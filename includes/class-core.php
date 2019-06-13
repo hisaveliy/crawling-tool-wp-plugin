@@ -45,26 +45,16 @@ class Core {
     //enqueue css and js files
     Assets::enqueue();
 
-    // PostTypes::instance();
-
-    // Shortcodes::instance();
-
-    // Requests::ajax();
-
-    // Routes::instance();
-
-    // AutoUpdate::init();
-
     //add plugin action and meta links
     self::plugin_links(array(
       'actions' => array(
-        // PLUGIN_SETTINGS_URL => __('Settings', 'savellab'),
-        // admin_url('admin.php?page=wc-status&tab=logs') => __('Logs', 'savellab'),
-        // admin_url('plugins.php?action='.PREFIX.'_check_updates') => __('Check for Updates', 'savellab')
+        // PLUGIN_SETTINGS_URL => __('Settings', TEXT_DOMAIN),
+        // admin_url('admin.php?page=wc-status&tab=logs') => __('Logs', TEXT_DOMAIN),
+        // admin_url('plugins.php?action='.PREFIX.'_check_updates') => __('Check for Updates', TEXT_DOMAIN)
       ),
       'meta' => array(
-        // '#1' => __('Docs', 'savellab'),
-        // '#2' => __('Visit website', 'savellab')
+        // '#1' => __('Docs', TEXT_DOMAIN),
+        // '#2' => __('Visit website', TEXT_DOMAIN)
       ),
     ));
 
@@ -173,7 +163,7 @@ class Core {
 
     if (version_compare(phpversion(), '7.0', '<')){
       wp_die(sprintf(
-        __('Your server must have at least PHP 7.0! Please upgrade! %sGo back%s', 'savellab'),
+        __('Your server must have at least PHP 7.0! Please upgrade! %sGo back%s', TEXT_DOMAIN),
         '<a href="'.admin_url('plugins.php').'">',
         '</a>'
       ));
@@ -181,7 +171,7 @@ class Core {
 
     if (version_compare(get_bloginfo('version'), '4.5', '<')){
       wp_die(sprintf(
-        __('You need at least Wordpress 4.5! Please upgrade! %sGo back%s', 'savellab'),
+        __('You need at least Wordpress 4.5! Please upgrade! %sGo back%s', TEXT_DOMAIN),
         '<a href="'.admin_url('plugins.php').'">',
         '</a>'
       ));

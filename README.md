@@ -9,19 +9,20 @@
 
 ## Setup
 
-1. change **plugin_name** in `/webpack.config` file with the plugin folder name you are going to develop
-2. change **plugin_name** in `/package.hson` file with the plugin folder name you are going to develop
+1. change **plugin_name** in `/package.hson` file with the plugin folder name you are going to develop
 
-3. change **{Plugin_Name}** and **{Plugin_Description}** inside of `/src/php/bootstrap.php` file with the appropriate information
-4. change all occurrences of namespace **Savellab_Plugin** with your desire namespace
-5. run `npm install` and `composer install`
-6. for compiling:
+1. change **{Plugin Name}** and **{Plugin Description}** inside of `/bootstrap.php` file with the appropriate information
+1. change all occurrences of namespace **Plugin_Scope** with your desire namespace
+1. change all occurrences of **Text_Domain** with the plugin's name which should be the same as folder name
+1. change Text_Domain.pot file's which should be the same as folder name
+1. run `npm install` and `composer install`
+1. for compiling:
    * run `npm start` for development
 
       * **Note:** after the initial build, webpack will continue to watch for changes in any of the resolved files and it will sync the root folder
    * run `npm run prod` for production
 
-7. for testing:
+1. for testing:
    * run `npm test` for running JS and PHP tests
 
 ## Important Notes

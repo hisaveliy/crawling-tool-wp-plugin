@@ -1,5 +1,5 @@
 {
-  "name": "wc-statistic-chart-addon",
+  "name": "plugin_name",
   "version": "1.0.0",
   "description": "## Requirements",
   "main": "index.js",

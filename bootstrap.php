@@ -1,19 +1,18 @@
 <?php
 /**
- * Plugin Name:       Savellab Boilerplate
- * Author URI:        https://savellab.nl/
- * Description:       Wordpress Extention
+ * Plugin Name:       Plugin Name
+ * Description:       Plugin Description
  * Version:           1.0.0
  * Author:            Savellab
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
- * Text Domain:       savellab
+ * Text Domain:       Text_Domain
  * Domain Path:       /languages
  * Network: false
  */
 
 
-namespace Savellab_Plugin;
+namespace Plugin_Scope;
 
 
 // If this file is called directly, abort.
@@ -26,7 +25,7 @@ define(__NAMESPACE__ . '\PREFIX', 'svlb');
 
 define(__NAMESPACE__ . '\PLUGIN_VERSION', '1.0.0');
 
-define(__NAMESPACE__ . '\PLUGIN_NAME', 'Savellab Boilerplate');
+define(__NAMESPACE__ . '\PLUGIN_NAME', 'Plugin Name');
 
 define(__NAMESPACE__ . '\PLUGIN_URL', untrailingslashit(plugin_dir_url(__FILE__)));
 
@@ -46,6 +45,8 @@ define(__NAMESPACE__ . '\AUTO_UPDATE_URL', 'https://savellab.com');
 
 define(__NAMESPACE__ . '\ERROR_PATH', plugin_dir_path(__FILE__) . 'error.log');
 
+define(__NAMESPACE__ . '\TEXT_DOMAIN', 'Text_Domain');
+
 
 //init
 if(!class_exists( __NAMESPACE__ . '\Core')){
@@ -57,5 +58,5 @@ register_deactivation_hook( __FILE__, __NAMESPACE__ . '\Core::on_deactivation');
 
 //load translation, make sure this hook runs before all, so we set priority to 1
 add_action('init', function(){
-   load_plugin_textdomain( 'savellab', false, dirname(plugin_basename( __FILE__ )) . '/languages/' );
+   load_plugin_textdomain( 'Text_Domain', false, dirname(plugin_basename( __FILE__ )) . '/languages/' );
 }, 1);

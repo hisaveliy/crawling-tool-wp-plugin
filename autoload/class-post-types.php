@@ -6,7 +6,7 @@
  * Time: 5:50 PM
  */
 
-namespace Savellab_Plugin;
+namespace Plugin_Scope;
 
 class PostTypes {
 
@@ -53,18 +53,18 @@ class PostTypes {
     register_post_type('guide', array(
       'label'  => null,
       'labels' => array(
-        'name'               => __('Guides', TEXDOMAIN),
-        'singular_name'      => __('Guide', TEXDOMAIN),
-        'add_new'            => __('Add Guide', TEXDOMAIN),
-        'add_new_item'       => __('Add new Guide', TEXDOMAIN),
-        'edit_item'          => __('Edit Guide', TEXDOMAIN),
-        'new_item'           => __('New Guide', TEXDOMAIN),
-        'view_item'          => __('See Guide', TEXDOMAIN),
-        'search_items'       => __('Search Guides', TEXDOMAIN),
-        'not_found'          => __('Not Found', TEXDOMAIN),
-        'not_found_in_trash' => __('Not Found in Trash', TEXDOMAIN),
+        'name'               => __('Guides', TEXT_DOMAIN),
+        'singular_name'      => __('Guide', TEXT_DOMAIN),
+        'add_new'            => __('Add Guide', TEXT_DOMAIN),
+        'add_new_item'       => __('Add new Guide', TEXT_DOMAIN),
+        'edit_item'          => __('Edit Guide', TEXT_DOMAIN),
+        'new_item'           => __('New Guide', TEXT_DOMAIN),
+        'view_item'          => __('See Guide', TEXT_DOMAIN),
+        'search_items'       => __('Search Guides', TEXT_DOMAIN),
+        'not_found'          => __('Not Found', TEXT_DOMAIN),
+        'not_found_in_trash' => __('Not Found in Trash', TEXT_DOMAIN),
         'parent_item_colon'  => '',
-        'menu_name'          => __('Guides', TEXDOMAIN),
+        'menu_name'          => __('Guides', TEXT_DOMAIN),
       ),
       'description'         => '',
       'public'              => true,
@@ -93,18 +93,18 @@ class PostTypes {
     register_taxonomy('guide-cat', array('guide'), array(
       'label'                 => '',
       'labels'                => array(
-        'name'              => __('Categories', TEXDOMAIN),
-        'singular_name'     => __('Category', TEXDOMAIN),
-        'search_items'      => __('Search Categories', TEXDOMAIN),
-        'all_items'         => __('All Categories', TEXDOMAIN),
-        'view_item '        => __('View Category', TEXDOMAIN),
-        'parent_item'       => __('Parent Category', TEXDOMAIN),
-        'parent_item_colon' => __('Parent Category:', TEXDOMAIN),
-        'edit_item'         => __('Edit Category', TEXDOMAIN),
-        'update_item'       => __('Update Category', TEXDOMAIN),
-        'add_new_item'      => __('Add New Category', TEXDOMAIN),
-        'new_item_name'     => __('New Category Name', TEXDOMAIN),
-        'menu_name'         => __('Categories', TEXDOMAIN),
+        'name'              => __('Categories', TEXT_DOMAIN),
+        'singular_name'     => __('Category', TEXT_DOMAIN),
+        'search_items'      => __('Search Categories', TEXT_DOMAIN),
+        'all_items'         => __('All Categories', TEXT_DOMAIN),
+        'view_item '        => __('View Category', TEXT_DOMAIN),
+        'parent_item'       => __('Parent Category', TEXT_DOMAIN),
+        'parent_item_colon' => __('Parent Category:', TEXT_DOMAIN),
+        'edit_item'         => __('Edit Category', TEXT_DOMAIN),
+        'update_item'       => __('Update Category', TEXT_DOMAIN),
+        'add_new_item'      => __('Add New Category', TEXT_DOMAIN),
+        'new_item_name'     => __('New Category Name', TEXT_DOMAIN),
+        'menu_name'         => __('Categories', TEXT_DOMAIN),
       ),
       'description'           => '',
       'public'                => true,

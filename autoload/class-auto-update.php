@@ -5,7 +5,7 @@
  * @since      1.0.0
  */
 
-namespace Savellab_Plugin;
+namespace Plugin_Scope;
 
 
 class AutoUpdate{
@@ -83,7 +83,7 @@ class AutoUpdate{
 
          if( $check && ($do_update == 0 || $do_update == -1) ){
             Utility::show_notice(sprintf(
-               __('%s plugin is already up to date, no new updates were found.', 'savellab'),
+               __('%s plugin is already up to date, no new updates were found.', TEXT_DOMAIN),
                '<b>'.PLUGIN_NAME.'</b>'
             ), 'success');
          }
@@ -368,7 +368,7 @@ class AutoUpdate{
       if(self::$key == '' || self::$email == ''){
 
          Utility::show_notice(sprintf(
-            __('Please %sprovide%s a valid license key for %s plugin to receive automatic updates and support. Need a license key? %sPurchase one now!%s', 'savellab'),
+            __('Please %sprovide%s a valid license key for %s plugin to receive automatic updates and support. Need a license key? %sPurchase one now!%s', TEXT_DOMAIN),
             '<a href="'.PLUGIN_SETTINGS_URL.'">',
             '</a>',
             '<b>'.PLUGIN_NAME.'</b>',
@@ -393,7 +393,7 @@ class AutoUpdate{
          if($license->code == '101'){
 
             $msg = sprintf(
-               __('Invalid API License Key for %s plugin. Login to your %sMy Account%s page to find a valid API License Key.', 'savellab'),
+               __('Invalid API License Key for %s plugin. Login to your %sMy Account%s page to find a valid API License Key.', TEXT_DOMAIN),
                '<b>'.PLUGIN_NAME.'</b>',
                '<a href="'.self::$site_url.'" target="_blank">',
                '</a>'
@@ -404,7 +404,7 @@ class AutoUpdate{
          if($license->code == '106'){
 
             $msg = sprintf(
-               __('The subscription for license key of %s plugin is inactive. This means you will no longer receive automatic updates and support. Please check your %s account %s to activate the subscription.', 'savellab'),
+               __('The subscription for license key of %s plugin is inactive. This means you will no longer receive automatic updates and support. Please check your %s account %s to activate the subscription.', TEXT_DOMAIN),
                '<b>'.PLUGIN_NAME.'</b>',
                '<a href="'.self::$site_url.'" target="_blank">',
                '</a>'
@@ -430,7 +430,7 @@ class AutoUpdate{
          }else{
 
             Utility::show_notice(sprintf(
-               __('It looks like the license key of %s plugin has been set inactive by our shop. Please %s contact us %s for more details.', 'savellab'),
+               __('It looks like the license key of %s plugin has been set inactive by our shop. Please %s contact us %s for more details.', TEXT_DOMAIN),
                '<b>'.PLUGIN_NAME.'</b>',
                '<a href="'.self::$site_url.'" target="_blank">',
                '</a>'
@@ -469,7 +469,7 @@ class AutoUpdate{
 
             if(isset($data->errors['no_key'])){
                Utility::show_notice(sprintf(
-                  __('The license key for %s plugin could not be found in the system. Please check your %s account %s to find a valid API License Key.', 'savellab'),
+                  __('The license key for %s plugin could not be found in the system. Please check your %s account %s to find a valid API License Key.', TEXT_DOMAIN),
                   '<b>'.PLUGIN_NAME.'</b>',
                   '<a href="'.self::$site_url.'" target="_blank">',
                   '</a>'
@@ -478,7 +478,7 @@ class AutoUpdate{
 
             if(isset($data->errors['no_activation'])){
                Utility::show_notice(sprintf(
-                  __('The license key for %s plugin has not yet been activated. Please %s contact us %s for more details.', 'savellab'),
+                  __('The license key for %s plugin has not yet been activated. Please %s contact us %s for more details.', TEXT_DOMAIN),
                   '<b>'.PLUGIN_NAME.'</b>',
                   '<a href="'.self::$site_url.'" target="_blank">',
                   '</a>'
@@ -555,7 +555,7 @@ class AutoUpdate{
     * @return void
     */
    public static function api_status(){
-      return get_option(PREFIX . '_license_active') != 'true' || self::$key == '' || self::$email == '' ? sprintf(__('%sStatus:%s %sInactive%s', 'savellab'), '<b>', '</b>', '<span style="color: #cc0000;">', '</span>') : sprintf(__('%sStatus:%s %sActive%s', 'savellab'), '<b>', '</b>', '<span style="color: green;">', '</span>');
+      return get_option(PREFIX . '_license_active') != 'true' || self::$key == '' || self::$email == '' ? sprintf(__('%sStatus:%s %sInactive%s', TEXT_DOMAIN), '<b>', '</b>', '<span style="color: #cc0000;">', '</span>') : sprintf(__('%sStatus:%s %sActive%s', TEXT_DOMAIN), '<b>', '</b>', '<span style="color: green;">', '</span>');
    }
 
 }

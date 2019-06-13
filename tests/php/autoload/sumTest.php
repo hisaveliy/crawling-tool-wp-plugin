@@ -1,6 +1,6 @@
 <?php
 
-namespace Savellab_Plugin;
+namespace Plugin_Scope;
 
 include_once __DIR__ . '/../../../autoload/class-utility.php';
 
