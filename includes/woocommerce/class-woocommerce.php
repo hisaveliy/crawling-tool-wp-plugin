@@ -1,68 +1,53 @@
 <?php
 /**
- * This is responsible for Woocommerce work stuff
+ * This is responsible for extending general things of WooCommerce
  *
- * @since      1.0.0
+ * @since 1.0.0
  */
 
-namespace Savellab_Plugin;
+namespace Plugin_Namespace;
 
 
-class Woocommerce{
-
-  protected static $instance = null;
-
-  /**
-   * Return an instance of this class.
-   *
-   * @since     1.0.0
-   *
-   * @return    object    A single instance of this class.
-   */
-  public static function instance() {
-
-    // If the single instance hasn't been set, set it now.
-    if ( null == self::$instance ) {
-      self::$instance = new self;
-    }
-
-    return self::$instance;
-  }
+//prevent direct access data leaks
+defined( 'ABSPATH' ) || exit;
 
 
+class Woocommerce {
 
-  /**
-   * @since 1.0.0
-   */
-  public function __construct(){
+	/**
+	 * The instance of this class
+	 *
+	 * @since 1.0.0
+	 * @var null|object
+	 */
+	protected static $instance = null;
 
-    add_action('init', __CLASS__ . '::run_on_init');
 
-  }
+	/**
+	 * Return an instance of this class.
+	 *
+	 * @since     1.0.0
+	 *
+	 * @return    object    A single instance of this class.
+	 */
+	public static function instance() {
 
-  /**
-   * Runs after WordPress has finished loading but before any headers are sent
-   *
-   * @since 1.0.0
-   * @return void
-   */
-  public static function run_on_init(){
+		// If the single instance hasn't been set, set it now.
+		if ( null == self::$instance ) {
+			self::$instance = new self;
+		}
 
-    if(class_exists('\WooCommerce')){
+		return self::$instance;
+	}
 
-        include_once PLUGIN_DIR . '/includes/woocommerce/class-settings.php';
 
-    }else{
 
-      Utility::show_notice(sprintf(
-        __('%s plugin requires %sWooCommerce%s plugin to be installed and active!'),
-        '<b>'.PLUGIN_NAME.'</b>',
-        '<a href="https://woocommerce.com" target="_blank">',
-        '</a>'
-      ), 'error');
+	/**
+	 * @since 1.0.0
+	 */
+	public function __construct(){
 
-    }
-  }
+	}
 
 }
 Woocommerce::instance();
