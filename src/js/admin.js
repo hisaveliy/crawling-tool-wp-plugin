@@ -3,7 +3,6 @@
 import Vue from 'vue'
 import HelloWorld from './components/HelloWorld.vue'
 
-
 !(function(){
 
   Vue.config.productionTip = false

@@ -9,7 +9,7 @@
 
 ## Setup
 
-1. Change **plugin_name** in `/package.hson` file with the plugin folder name you are going to develop
+1. Change **plugin_name** in `/package.json` file with the plugin folder name you are going to develop
 1. Change **{Plugin_Name}**, **{Plugin_Description}**, **{Plugin_Prefix}**, and **{Plugin_URI}** with the appropriate information
 1. Change **{Author}**, **{Author_URI}**, **{Developer_name}**, and **{Developer_URI}** with the appropriate information
 1. Change all occurrences of namespace **Plugin_Scope** with your desire namespace
