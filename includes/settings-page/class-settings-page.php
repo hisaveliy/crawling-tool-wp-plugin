@@ -6,7 +6,7 @@
  * Time: 22:41
  */
 
-namespace Savellab\Simple;
+namespace Plugin_Scope;
 
 class Settings_Page {
 

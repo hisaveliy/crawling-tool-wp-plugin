@@ -5,7 +5,7 @@
  * @since 1.0.0
  */
 
-namespace Plugin_Namespace;
+namespace Plugin_Scope;
 
 
 //prevent direct access data leaks
