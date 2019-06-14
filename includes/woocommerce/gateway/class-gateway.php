@@ -26,7 +26,7 @@ class Gateway extends \WC_Payment_Gateway {
 	public function __construct(){
 
 
-		$this->id                 = 'gateway_id';
+		$this->id                 = 'gateway_' . PREFIX;
 		$this->icon               = apply_filters('woocommerce_offline_icon', '');
 		$this->has_fields         = true;
 		// $this->enabled            = 'no';

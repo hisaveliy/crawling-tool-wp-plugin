@@ -19,6 +19,7 @@
     * For enabling WC support and Settings page `define(__NAMESPACE__ . '\WOOCOMMERCE_PLUGIN', true);`
 1. In case the plugin uses Woocommerce payment gateway you should define it in the  `/bootstrap.php` file
     * So the settings page will appear`define(__NAMESPACE__ . '\PAYMENT_GATEWAY', true);`
+    * Replace **{Gateway_name}** with gateway name
 1. In case the plugin depends on Gravity Forms you should define it in the `/bootstrap.php` file
     * For enabling GF support and Settings page `define(__NAMESPACE__ . '\GFORMS_ADDON', true);`
     * Also define `define(__NAMESPACE__ . '\GFORMS_ADDON_NAME', 'GF_Addon_Name');` and `define(__NAMESPACE__ . '\GFORMS_CLASS_NAME', 'GF_Class_Name');`
