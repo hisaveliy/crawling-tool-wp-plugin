@@ -56,6 +56,14 @@ define(__NAMESPACE__ . '\ERROR_PATH', plugin_dir_path(__FILE__) . 'error.log');
 
 define(__NAMESPACE__ . '\TEXT_DOMAIN', '{Text_Domain}');
 
+define(__NAMESPACE__ . '\COMPOSER', false);
+
+/**
+ * Native Settings page
+ */
+
+define(__NAMESPACE__ . '\SETTINGS_PAGE', false);
+
 /**
  * Woocommerce Settings
  */
