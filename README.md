@@ -9,13 +9,12 @@
 
 ## Setup
 
-1. change **plugin_name** in `/package.hson` file with the plugin folder name you are going to develop
-
-1. change **{Plugin_Name}**, **{Plugin_Description}**, **{Plugin_Prefix}**, and **{Plugin_URI}** with the appropriate information
-1. change **{Author}**, **{Author_URI}**, **{Developer_name}**, and **{Developer_URI}** with the appropriate information
-1. change all occurrences of namespace **Plugin_Scope** with your desire namespace
-1. change all occurrences of **{Text_Domain}** with the plugin's name which should be the same as folder name
-1. change Text_Domain.pot file's which should be the same as folder name
+1. Change **plugin_name** in `/package.hson` file with the plugin folder name you are going to develop
+1. Change **{Plugin_Name}**, **{Plugin_Description}**, **{Plugin_Prefix}**, and **{Plugin_URI}** with the appropriate information
+1. Change **{Author}**, **{Author_URI}**, **{Developer_name}**, and **{Developer_URI}** with the appropriate information
+1. Change all occurrences of namespace **Plugin_Scope** with your desire namespace
+1. Change all occurrences of **{Text_Domain}** with the plugin's name which should be the same as folder name
+1. Change Text_Domain.pot file's which should be the same as folder name
 1. In case the plugin depends on Woocommerce you should define it in the `/bootstrap.php` file
     * For enabling WC support and Settings page `define(__NAMESPACE__ . '\WOOCOMMERCE_PLUGIN', true);`
 1. In case the plugin uses Woocommerce payment gateway you should define it in the  `/bootstrap.php` file
@@ -25,8 +24,9 @@
     * Also define `define(__NAMESPACE__ . '\GFORMS_ADDON_NAME', 'GF_Addon_Name');` and `define(__NAMESPACE__ . '\GFORMS_CLASS_NAME', 'GF_Class_Name');`
     * Then replace **GF_Addon_Name** with a `One_Word` name over the project
     * Then replace **GF_Class_Name** with a `GFPluginNameAddon` class name over the project
-1. run `npm install` and `composer install`
-1. for compiling:
+1. Run `npm install`
+1. If you're going to use composer run `composer install` and uncomment autoloader including at `/bootstrap.php`
+1. For compiling:
    * run `npm run dev` for development
 
       * **Note:** after the initial build, webpack will continue to watch for changes in any of the resolved files and it will sync the root folder
