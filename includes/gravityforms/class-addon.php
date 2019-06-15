@@ -11,15 +11,24 @@ GFForms::include_addon_framework();
 class GF_Class_Name extends GFAddOn {
 
 	protected $_version = GF_GF_Addon_Name_ADDON_VERSION;
+
 	protected $_min_gravityforms_version = '1.9';
+
 	protected $_slug = '{Plugin_Prefix}';
+
 	protected $_path = '{Text_Domain}/bootstrap.php';
+
 	protected $_full_path = __FILE__;
+
 	protected $_title = '{Plugin_Name}';
+
 	protected $_short_title = 'GF_Addon_Name Add-On';
 
 	private static $_instance = null;
 
+	/**
+	 * @return GF_Class_Name|null
+	 */
 	public static function get_instance() {
 		if ( self::$_instance == null ) {
 			self::$_instance = new GF_Class_Name();
@@ -54,8 +63,8 @@ class GF_Class_Name extends GFAddOn {
 				'fields' => array(
 					array(
 						'name'              => 'mytextbox',
-						'tooltip'           => esc_html__( 'This is the tooltip', 'simpleaddon' ),
-						'label'             => esc_html__( 'This is the label', 'simpleaddon' ),
+						'tooltip'           => esc_html__( 'This is the tooltip', '{Text_Domain}' ),
+						'label'             => esc_html__( 'This is the label', '{Text_Domain}' ),
 						'type'              => 'text',
 						'class'             => 'small',
 						'feedback_callback' => array( $this, 'is_valid_setting' ),

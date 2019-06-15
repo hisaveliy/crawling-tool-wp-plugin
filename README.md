@@ -9,20 +9,31 @@
 
 ## Setup
 
+1. Replace folder name **savellab-plugin**  with the plugin folder name you are going to develop
 1. Change **plugin_name** in `/package.json` file with the plugin folder name you are going to develop
 1. Change **{Plugin_Name}**, **{Plugin_Description}**, **{Plugin_Prefix}**, and **{Plugin_URI}** with the appropriate information
 1. Change **{Author}**, **{Author_URI}**, **{Developer_name}**, and **{Developer_URI}** with the appropriate information
 1. Change all occurrences of namespace **Plugin_Scope** with your desire namespace
 1. Change all occurrences of **{Text_Domain}** with the plugin's name which should be the same as folder name
 1. Change Text_Domain.pot file's which should be the same as folder name
+
+### Settings page
+
+1. If you're going to create a custom settings page within Wordpress and this setting page is not supposed to depend on Woocommerce or Gravity Forms do the next
+    * Define a constant `define(__NAMESPACE__ . '\SETTINGS_PAGE', true);`
+
+### WooCommerce
+
 1. In case the plugin depends on Woocommerce you should define it in the `/bootstrap.php` file
     * For enabling WC support and Settings page `define(__NAMESPACE__ . '\WOOCOMMERCE_PLUGIN', true);`
 1. In case the plugin uses Woocommerce payment gateway you should define it in the  `/bootstrap.php` file
     * So the settings page will appear`define(__NAMESPACE__ . '\PAYMENT_GATEWAY', true);`
     * Replace **{Gateway_name}** with gateway name
+    
+### Gravity Forms
+    
 1. In case the plugin depends on Gravity Forms you should define it in the `/bootstrap.php` file
     * For enabling GF support and Settings page `define(__NAMESPACE__ . '\GFORMS_ADDON', true);`
-    * Also define `define(__NAMESPACE__ . '\GFORMS_ADDON_NAME', 'GF_Addon_Name');` and `define(__NAMESPACE__ . '\GFORMS_CLASS_NAME', 'GF_Class_Name');`
     * Then replace **GF_Addon_Name** with a `One_Word` name over the project
     * Then replace **GF_Class_Name** with a `GFPluginNameAddon` class name over the project
 1. Run `npm install`
