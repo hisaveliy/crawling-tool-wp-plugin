@@ -6,7 +6,7 @@
  * Time: 5:50 PM
  */
 
-namespace Plugin_Scope;
+namespace Crawling_WP;
 
 class Shortcodes {
 

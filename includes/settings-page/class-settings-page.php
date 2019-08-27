@@ -6,7 +6,7 @@
  * Time: 22:41
  */
 
-namespace TourismTiger\TourCMS;
+namespace Crawling_WP;
 
 use Hamcrest\Util;
 

@@ -5,7 +5,7 @@
  * @since 1.0.0
  */
 
-namespace Plugin_Scope;
+namespace Crawling_WP;
 
 
 //prevent direct access data leaks
@@ -78,7 +78,7 @@ class WC_Settings extends \WC_Settings_Page {
 	 */
 	public function add_settings_tab($settings_tabs) {
 
-		$settings_tabs[$this->id] = __('Settings Tab', '{Text_Domain}');
+		$settings_tabs[$this->id] = __('Settings Tab', 'savellab');
 
 		return $settings_tabs;
 	}
@@ -93,8 +93,8 @@ class WC_Settings extends \WC_Settings_Page {
 	public function get_sections() {
 
 		$sections = array(
-			'' => __( 'General', '{Text_Domain}' ),
-			'second' => __( 'Second', '{Text_Domain}' ),
+			'' => __( 'General', 'savellab' ),
+			'second' => __( 'Second', 'savellab' ),
 		);
 
 		return apply_filters( 'woocommerce_get_sections_' . $this->id, $sections );
@@ -117,16 +117,16 @@ class WC_Settings extends \WC_Settings_Page {
 
 				$settings = array(
 					array(
-						'name'          => '',//__( 'Second', '{Text_Domain}' ),
+						'name'          => '',//__( 'Second', 'savellab' ),
 						'type'          => 'title',
 						'desc'          => '',
 					),
 					array(
-						'name'          => __( 'Layout', '{Text_Domain}' ),
+						'name'          => __( 'Layout', 'savellab' ),
 						'type'          => 'select',
 						'id'            => PREFIX .'_layouts',
 						'options'       => array(
-							'default'    => __('Default', '{Text_Domain}')
+							'default'    => __('Default', 'savellab')
 						)
 					),
 					array(
@@ -140,12 +140,12 @@ class WC_Settings extends \WC_Settings_Page {
 
 				$settings = array(
 					array(
-						'name' => __( 'Information', '{Text_Domain}' ),
+						'name' => __( 'Information', 'savellab' ),
 						'type' => 'title',
 						'id'   => PREFIX .'_details_title',
 					),
 					array(
-						'name' => __( 'Name', '{Text_Domain}' ),
+						'name' => __( 'Name', 'savellab' ),
 						'type' => 'text',
 						'id'   => PREFIX .'_shop_name',
 						'default' => get_bloginfo('name')

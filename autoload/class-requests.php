@@ -5,7 +5,7 @@
  * @since      1.0.0
  */
 
-namespace Plugin_Scope;
+namespace Crawling_WP;
 
 class Requests {
 

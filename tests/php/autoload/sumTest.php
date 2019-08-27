@@ -1,6 +1,6 @@
 <?php
 
-namespace Plugin_Scope;
+namespace Crawling_WP;
 
 include_once __DIR__ . '/../../../autoload/class-utility.php';
 

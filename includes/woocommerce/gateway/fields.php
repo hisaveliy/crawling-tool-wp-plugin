@@ -5,7 +5,7 @@
  * @since 1.0.0
  */
 
-namespace Plugin_Scope;
+namespace Crawling_WP;
 
 //prevent direct access data leaks
 defined( 'ABSPATH' ) || exit;
@@ -13,6 +13,6 @@ defined( 'ABSPATH' ) || exit;
 ?>
 
 
-<div class="{Plugin_Prefix}-fields">
+<div class="crawling_wp-fields">
 
 </div>

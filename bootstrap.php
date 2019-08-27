@@ -1,14 +1,13 @@
 <?php
 /**
- * Plugin Name: {Plugin_Name}
- * Plugin URI: {Plugin_URI}
- * Description: {Plugin_Description}
+ * Plugin Name: Crawling Tool WP Plugin
+ * Description: Parser Tools
  * Version: 1.0.0
- * Author: {Author}
- * Author URI:  {Author_URI}
- * Developer: {Developer_name}
- * Developer URI: {Developer_URI}
- * Text Domain: {Text_Domain}
+ * Author: Savellab
+ * Author URI:  https://savellab.nl/
+ * Developer: TheArdent
+ * Developer URI: mailto:oleksii.yaryi@gmail.com
+ * Text Domain: savellab
  * Domain Path: /languages
  * Network: false
  *
@@ -21,7 +20,7 @@
  */
 
 
-namespace Plugin_Scope;
+namespace Crawling_WP;
 
 
 // If this file is called directly, abort.
@@ -30,11 +29,11 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 
-define(__NAMESPACE__ . '\PREFIX', '{Plugin_Prefix}');
+define(__NAMESPACE__ . '\PREFIX', 'crawling_wp');
 
 define(__NAMESPACE__ . '\PLUGIN_VERSION', '1.0.0');
 
-define(__NAMESPACE__ . '\PLUGIN_NAME', '{Plugin_Name}');
+define(__NAMESPACE__ . '\PLUGIN_NAME', 'Crawling Tool WP Plugin');
 
 define(__NAMESPACE__ . '\PLUGIN_URL', untrailingslashit(plugin_dir_url(__FILE__)));
 
@@ -55,7 +54,7 @@ define(__NAMESPACE__ . '\AUTO_UPDATE_URL', 'https://savellab.com');
 
 define(__NAMESPACE__ . '\ERROR_PATH', plugin_dir_path(__FILE__) . 'error.log');
 
-define(__NAMESPACE__ . '\TEXT_DOMAIN', '{Text_Domain}');
+define(__NAMESPACE__ . '\TEXT_DOMAIN', 'savellab');
 
 define(__NAMESPACE__ . '\COMPOSER', false);
 

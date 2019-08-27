@@ -5,7 +5,7 @@
  * @since      1.0.0
  */
 
-namespace Plugin_Scope;
+namespace Crawling_WP;
 
 
 class Core {
@@ -146,7 +146,7 @@ class Core {
 
 				if($show_msg){
 					Utility::show_notice(sprintf(
-						__('%s plugin requires %s plugin to be installed and active!', '{Text_Domain}'),
+						__('%s plugin requires %s plugin to be installed and active!', 'savellab'),
 						'<b>'.PLUGIN_NAME.'</b>',
 						"<b>{$name}</b>"
 					), 'error');
@@ -173,13 +173,13 @@ class Core {
 		//add plugin action and meta links
 		self::plugin_links(array(
 			'actions' => array(
-				PLUGIN_SETTINGS_URL => __('Settings', '{Text_Domain}'),
-				// admin_url('admin.php?page=wc-status&tab=logs') => __('Logs', '{Text_Domain}'),
-				// admin_url('plugins.php?action='.PREFIX.'_check_updates') => __('Check for Updates', '{Text_Domain}')
+				PLUGIN_SETTINGS_URL => __('Settings', 'savellab'),
+				// admin_url('admin.php?page=wc-status&tab=logs') => __('Logs', 'savellab'),
+				// admin_url('plugins.php?action='.PREFIX.'_check_updates') => __('Check for Updates', 'savellab')
 			),
 			'meta' => array(
-				// '#1' => __('Docs', '{Text_Domain}'),
-				// '#2' => __('Visit website', '{Text_Domain}')
+				// '#1' => __('Docs', 'savellab'),
+				// '#2' => __('Visit website', 'savellab')
 			),
 		));
 	}
@@ -298,7 +298,7 @@ class Core {
 
 		if (version_compare(phpversion(), '7.0', '<')) {
 			wp_die(sprintf(
-				__('Hey! Your server must have at least PHP 7.0! Could you please upgrade! %sGo back%s', '{Text_Domain}'),
+				__('Hey! Your server must have at least PHP 7.0! Could you please upgrade! %sGo back%s', 'savellab'),
 				'<a href="'.admin_url('plugins.php').'">',
 				'</a>'
 			));
@@ -306,7 +306,7 @@ class Core {
 
 		if (version_compare(get_bloginfo('version'), '5.0', '<')) {
 			wp_die(sprintf(
-				__('We need at least Wordpress 5.0! Could you please upgrade! %sGo back%s', '{Text_Domain}'),
+				__('We need at least Wordpress 5.0! Could you please upgrade! %sGo back%s', 'savellab'),
 				'<a href="'.admin_url('plugins.php').'">',
 				'</a>'
 			));

@@ -14,13 +14,13 @@ class GF_Class_Name extends GFAddOn {
 
 	protected $_min_gravityforms_version = '1.9';
 
-	protected $_slug = '{Plugin_Prefix}';
+	protected $_slug = 'crawling_wp';
 
-	protected $_path = '{Text_Domain}/bootstrap.php';
+	protected $_path = 'savellab/bootstrap.php';
 
 	protected $_full_path = __FILE__;
 
-	protected $_title = '{Plugin_Name}';
+	protected $_title = 'Crawling Tool WP Plugin';
 
 	protected $_short_title = 'GF_Addon_Name Add-On';
 
@@ -63,8 +63,8 @@ class GF_Class_Name extends GFAddOn {
 				'fields' => array(
 					array(
 						'name'              => 'mytextbox',
-						'tooltip'           => esc_html__( 'This is the tooltip', '{Text_Domain}' ),
-						'label'             => esc_html__( 'This is the label', '{Text_Domain}' ),
+						'tooltip'           => esc_html__( 'This is the tooltip', 'savellab' ),
+						'label'             => esc_html__( 'This is the label', 'savellab' ),
 						'type'              => 'text',
 						'class'             => 'small',
 						'feedback_callback' => array( $this, 'is_valid_setting' ),
@@ -77,131 +77,131 @@ class GF_Class_Name extends GFAddOn {
 	public function form_settings_fields( $form ) {
 		return array(
 			array(
-				'title'  => esc_html__( 'GF_Addon_Name Settings', '{Text_Domain}' ),
+				'title'  => esc_html__( 'GF_Addon_Name Settings', 'savellab' ),
 				'fields' => array(
 					array(
-						'label'   => esc_html__( 'My checkbox', '{Text_Domain}' ),
+						'label'   => esc_html__( 'My checkbox', 'savellab' ),
 						'type'    => 'checkbox',
 						'name'    => 'enabled',
-						'tooltip' => esc_html__( 'This is the tooltip', '{Text_Domain}' ),
+						'tooltip' => esc_html__( 'This is the tooltip', 'savellab' ),
 						'choices' => array(
 							array(
-								'label' => esc_html__( 'Enabled', '{Text_Domain}' ),
+								'label' => esc_html__( 'Enabled', 'savellab' ),
 								'name'  => 'enabled',
 							),
 						),
 					),
 					array(
-						'label'   => esc_html__( 'My checkboxes', '{Text_Domain}' ),
+						'label'   => esc_html__( 'My checkboxes', 'savellab' ),
 						'type'    => 'checkbox',
 						'name'    => 'checkboxgroup',
-						'tooltip' => esc_html__( 'This is the tooltip', '{Text_Domain}' ),
+						'tooltip' => esc_html__( 'This is the tooltip', 'savellab' ),
 						'choices' => array(
 							array(
-								'label' => esc_html__( 'First Choice', '{Text_Domain}' ),
+								'label' => esc_html__( 'First Choice', 'savellab' ),
 								'name'  => 'first',
 							),
 							array(
-								'label' => esc_html__( 'Second Choice', '{Text_Domain}' ),
+								'label' => esc_html__( 'Second Choice', 'savellab' ),
 								'name'  => 'second',
 							),
 							array(
-								'label' => esc_html__( 'Third Choice', '{Text_Domain}' ),
+								'label' => esc_html__( 'Third Choice', 'savellab' ),
 								'name'  => 'third',
 							),
 						),
 					),
 					array(
-						'label'   => esc_html__( 'My Radio Buttons', '{Text_Domain}' ),
+						'label'   => esc_html__( 'My Radio Buttons', 'savellab' ),
 						'type'    => 'radio',
 						'name'    => 'myradiogroup',
-						'tooltip' => esc_html__( 'This is the tooltip', '{Text_Domain}' ),
+						'tooltip' => esc_html__( 'This is the tooltip', 'savellab' ),
 						'choices' => array(
 							array(
-								'label' => esc_html__( 'First Choice', '{Text_Domain}' ),
+								'label' => esc_html__( 'First Choice', 'savellab' ),
 							),
 							array(
-								'label' => esc_html__( 'Second Choice', '{Text_Domain}' ),
+								'label' => esc_html__( 'Second Choice', 'savellab' ),
 							),
 							array(
-								'label' => esc_html__( 'Third Choice', '{Text_Domain}' ),
+								'label' => esc_html__( 'Third Choice', 'savellab' ),
 							),
 						),
 					),
 					array(
-						'label'      => esc_html__( 'My Horizontal Radio Buttons', '{Text_Domain}' ),
+						'label'      => esc_html__( 'My Horizontal Radio Buttons', 'savellab' ),
 						'type'       => 'radio',
 						'horizontal' => true,
 						'name'       => 'myradiogrouph',
-						'tooltip'    => esc_html__( 'This is the tooltip', '{Text_Domain}' ),
+						'tooltip'    => esc_html__( 'This is the tooltip', 'savellab' ),
 						'choices'    => array(
 							array(
-								'label' => esc_html__( 'First Choice', '{Text_Domain}' ),
+								'label' => esc_html__( 'First Choice', 'savellab' ),
 							),
 							array(
-								'label' => esc_html__( 'Second Choice', '{Text_Domain}' ),
+								'label' => esc_html__( 'Second Choice', 'savellab' ),
 							),
 							array(
-								'label' => esc_html__( 'Third Choice', '{Text_Domain}' ),
+								'label' => esc_html__( 'Third Choice', 'savellab' ),
 							),
 						),
 					),
 					array(
-						'label'   => esc_html__( 'My Dropdown', '{Text_Domain}' ),
+						'label'   => esc_html__( 'My Dropdown', 'savellab' ),
 						'type'    => 'select',
 						'name'    => 'mydropdown',
-						'tooltip' => esc_html__( 'This is the tooltip', '{Text_Domain}' ),
+						'tooltip' => esc_html__( 'This is the tooltip', 'savellab' ),
 						'choices' => array(
 							array(
-								'label' => esc_html__( 'First Choice', '{Text_Domain}' ),
+								'label' => esc_html__( 'First Choice', 'savellab' ),
 								'value' => 'first',
 							),
 							array(
-								'label' => esc_html__( 'Second Choice', '{Text_Domain}' ),
+								'label' => esc_html__( 'Second Choice', 'savellab' ),
 								'value' => 'second',
 							),
 							array(
-								'label' => esc_html__( 'Third Choice', '{Text_Domain}' ),
+								'label' => esc_html__( 'Third Choice', 'savellab' ),
 								'value' => 'third',
 							),
 						),
 					),
 					array(
-						'label'             => esc_html__( 'My Text Box', '{Text_Domain}' ),
+						'label'             => esc_html__( 'My Text Box', 'savellab' ),
 						'type'              => 'text',
 						'name'              => 'mytext',
-						'tooltip'           => esc_html__( 'This is the tooltip', '{Text_Domain}' ),
+						'tooltip'           => esc_html__( 'This is the tooltip', 'savellab' ),
 						'class'             => 'medium',
 						'feedback_callback' => array( $this, 'is_valid_setting' ),
 					),
 					array(
-						'label'   => esc_html__( 'My Text Area', '{Text_Domain}' ),
+						'label'   => esc_html__( 'My Text Area', 'savellab' ),
 						'type'    => 'textarea',
 						'name'    => 'mytextarea',
-						'tooltip' => esc_html__( 'This is the tooltip', '{Text_Domain}' ),
+						'tooltip' => esc_html__( 'This is the tooltip', 'savellab' ),
 						'class'   => 'medium merge-tag-support mt-position-right',
 					),
 					array(
-						'label' => esc_html__( 'My Hidden Field', '{Text_Domain}' ),
+						'label' => esc_html__( 'My Hidden Field', 'savellab' ),
 						'type'  => 'hidden',
 						'name'  => 'myhidden',
 					),
 					array(
-						'label' => esc_html__( 'My Custom Field', '{Text_Domain}' ),
+						'label' => esc_html__( 'My Custom Field', 'savellab' ),
 						'type'  => 'my_custom_field_type',
 						'name'  => 'my_custom_field',
 						'args'  => array(
 							'text'     => array(
-								'label'         => esc_html__( 'A textbox sub-field', '{Text_Domain}' ),
+								'label'         => esc_html__( 'A textbox sub-field', 'savellab' ),
 								'name'          => 'subtext',
 								'default_value' => 'change me',
 							),
 							'checkbox' => array(
-								'label'   => esc_html__( 'A checkbox sub-field', '{Text_Domain}' ),
+								'label'   => esc_html__( 'A checkbox sub-field', 'savellab' ),
 								'name'    => 'my_custom_field_check',
 								'choices' => array(
 									array(
-										'label'         => esc_html__( 'Activate', '{Text_Domain}' ),
+										'label'         => esc_html__( 'Activate', 'savellab' ),
 										'name'          => 'subcheck',
 										'default_value' => true,
 									),
@@ -215,7 +215,7 @@ class GF_Class_Name extends GFAddOn {
 	}
 
 	public function settings_my_custom_field_type( $field, $echo = true ) {
-		echo '<div>' . esc_html__( 'My custom field contains a few settings:', '{Text_Domain}' ) . '</div>';
+		echo '<div>' . esc_html__( 'My custom field contains a few settings:', 'savellab' ) . '</div>';
 
 		// get the text field settings from the main field and then render the text field
 		$text_field = $field['args']['text'];

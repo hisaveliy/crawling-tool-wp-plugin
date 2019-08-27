@@ -16,7 +16,7 @@
     <input
         name="save"
         type="button"
-        value="<?php _e('Save', '{Text_Domain}');?> "
+        value="<?php _e('Save', 'savellab');?> "
         class="button"
         onclick="submit_form(this, document.forms['form'])" />
 
