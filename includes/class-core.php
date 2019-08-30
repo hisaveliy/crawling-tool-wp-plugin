@@ -86,6 +86,8 @@ class Core {
 	 */
 	private static function includes(){
 
+	    include_once  PLUGIN_DIR.'/includes/crawl/autoload.php';
+
 		if (COMPOSER) :
 			include_once PLUGIN_DIR . '/vendor/autoload.php';
 		endif;
