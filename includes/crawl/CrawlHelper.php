@@ -47,4 +47,18 @@ class CrawlHelper
 
         return substr($html, $start, $end - $start);
     }
+
+    /**
+     * @param $html
+     * @param $var
+     * @return bool
+     */
+    public static function getJSVariable($html, $var)
+    {
+        if ($c = preg_match_all("/.*?({$var}).*?(=).*?([+-]?\\d*\\.\\d+)(?![-+0-9\\.])(;)/is", $html, $matches)) {
+            return $matches[3][0];
+        }
+
+        return null;
+    }
 }

@@ -42,10 +42,8 @@ class DeutscheWohnen
                 $id = self::isEstateExist($estete->id);
 
                 if ($id) {
-                    $rent = self::getEstateRent($estete);
-
                     if (RentEstate::getTotalRent($id) !== $estete->price) {
-                        $rent->save($id);
+                        self::getEstateRent($estete)->save($id);
                     }
                     continue;
                 } else {
@@ -256,9 +254,3 @@ class DeutscheWohnen
         return file_get_contents('https://www.deutsche-wohnen.com/expose/object/'.$crawl_id);
     }
 }
-
-//$c = new DeutscheWohnen();
-
-//$c->updateEstates();
-
-//echo DeutscheWohnen::getTableValue(DeutscheWohnen::getEstateHtml('1177/0003/0210'), 'Kaltmiete');

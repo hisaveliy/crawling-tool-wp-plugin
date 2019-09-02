@@ -1,5 +1,10 @@
 <?php
 
+if (! defined('Crawling_WP\PLUGIN_DIR')) {
+    define('Crawling_WP\PLUGIN_DIR','../../');
+}
+
+
 use const Crawling_WP\PLUGIN_DIR;
 
 $plugin_classes = [
@@ -12,6 +17,7 @@ $plugin_classes = [
     \Crawling_WP\RentEstate::class,
     \Crawling_WP\TermEstate::class,
     \Crawling_WP\Estate::class,
+    \Crawling_WP\BaseWebsite::class,
 ];
 
 
