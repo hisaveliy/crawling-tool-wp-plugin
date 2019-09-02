@@ -45,10 +45,17 @@ class Estate
 
     /**
      * Estate constructor.
+     * @param $post_id
      * @param $title
      * @param $description
      * @param AddressEstate $address
      * @param GalleryEstate $gallery
+     * @param ContactsEstate $contacts
+     * @param DetailsEstate $details
+     * @param RentEstate $rent
+     * @param TermEstate $terms
+     * @param $crawl_id
+     * @param $crawl_site
      */
     public function __construct(
         $post_id,
@@ -78,6 +85,18 @@ class Estate
 
     public function save()
     {
+        if (! $this->post_id) {
+            $this->post_id = wp_insert_post([
+                'post_title'   => $this->title,
+                'post_content' => $this->description,
+                'post_author'  => 1,
+                'post_type'    => 'iwp_property'
+            ]);
+
+            update_post_meta($this->post_id, '_crawl_id', $this->crawl_id);
+            update_post_meta($this->post_id, '_crawl_class', $this->crawl_site);
+        }
+
         $this->update_meta();
     }
 

@@ -7,9 +7,9 @@ namespace Crawling_WP;
 class ContactsEstate
 {
 
-    private $messages;
+    private $message;
     private $name;
-    private $phone;
+    private $telephone;
     private $email;
 
     /**
@@ -21,14 +21,36 @@ class ContactsEstate
      */
     public function __construct($messages, $name, $phone, $email)
     {
-        $this->messages = $messages;
-        $this->name     = $name;
-        $this->phone    = $phone;
-        $this->email    = $email;
+        $this->message   = $messages;
+        $this->name      = $name;
+        $this->telephone = $phone;
+        $this->email     = $email;
     }
 
+    /**
+     * @param $post_id
+     */
     public function save($post_id)
     {
-        //TODO TheArdent SET Default
+        delete_post_meta($post_id, '_iwp_contact_infomation');
+
+        foreach ($this->getAttributes() as $attribute) {
+            if ($this->$attribute) {
+                add_post_meta($post_id, '_iwp_contact_infomation', $attribute);
+            }
+        }
+    }
+
+    /**
+     * @return array
+     */
+    protected function getAttributes()
+    {
+        return [
+            'message',
+            'name',
+            'telephone',
+            'email'
+        ];
     }
 }

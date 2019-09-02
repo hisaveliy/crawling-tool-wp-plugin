@@ -13,9 +13,9 @@ class RentEstate
 
     /**
      * RentEstate constructor.
-     * @param $rent_monthly
-     * @param $addition_cost
-     * @param $deposit
+     * @param float $rent_monthly
+     * @param float $addition_cost
+     * @param float $deposit
      */
     public function __construct($rent_monthly, $addition_cost, $deposit)
     {
@@ -32,5 +32,17 @@ class RentEstate
         update_post_meta($post_id, '_iwp_price', $this->rent_monthly);
         update_post_meta($post_id, '_iwp_utilities', $this->addition_cost);
         update_post_meta($post_id, '_iwp_deposit', $this->deposit);
+    }
+
+    /**
+     * @param $post_id
+     * @return float
+     */
+    public static function getTotalRent($post_id)
+    {
+        $price    = get_post_meta($post_id, '_iwp_price', true);
+        $addition = get_post_meta($post_id, '_iwp_utilities', true);
+
+        return $price + $addition;
     }
 }

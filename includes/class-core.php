@@ -74,6 +74,14 @@ class Core {
 		if (PAYMENT_GATEWAY) :
 			add_action('init', __CLASS__.'::init_payment_gateway');
 		endif;
+//
+//		add_action('wp_loaded', function() {
+//		    return;
+//		    $d = new DeutscheWohnen();
+//		    $d->updateEstates();
+//
+//		    die();
+//        });
 	}
 
 

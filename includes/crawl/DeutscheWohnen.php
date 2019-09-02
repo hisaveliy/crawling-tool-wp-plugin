@@ -3,13 +3,6 @@
 
 namespace Crawling_WP;
 
-include_once 'AddressEstate.php';
-include_once 'GalleryEstate.php';
-include_once 'RentEstate.php';
-include_once 'DetailsEstate.php';
-include_once 'CrawlHelper.php';
-
-
 class DeutscheWohnen
 {
 
@@ -44,29 +37,45 @@ class DeutscheWohnen
     {
         try {
             $list = json_decode($this->getHtml());
-//
-//            file_put_contents('wohnen.json', json_encode($list));
-
-//            $list = json_decode(file_get_contents('wohnen.json'));
 
             foreach ($list as $estete) {
-
                 $id = self::isEstateExist($estete->id);
 
-                var_dump($id);die();
+                if ($id) {
+                    $rent = self::getEstateRent($estete);
 
-//                $address = self::getEstateAddress($estete);
-//                $gallery     = self::getEstateGallery($estete->images);
-//                $rent        = self::getEstateRent($estete);
-//                $details = self::getEstateDetails($estete);
-//                $description = self::getEstateDescription($estete->id);
-//                $terms = self::getEstateTerms($estete);
-//                $enity = new Estate($estete->title, $description, $address, $gallery, $estete->id, __CLASS__);
-                die();
+                    if (RentEstate::getTotalRent($id) !== $estete->price) {
+                        $rent->save($id);
+                    }
+                    continue;
+                } else {
+                    $address     = self::getEstateAddress($estete);
+                    $gallery     = self::getEstateGallery($estete->images);
+                    $rent        = self::getEstateRent($estete);
+                    $details     = self::getEstateDetails($estete);
+                    $description = self::getEstateDescription($estete->id);
+                    $terms       = self::getEstateTerms($estete);
+                    $contacts    = new ContactsEstate(true, false, false, true);
+
+                    $enity = new Estate(
+                        $id,
+                        $estete->title,
+                        $description,
+                        $address,
+                        $gallery,
+                        $contacts,
+                        $details,
+                        $rent,
+                        $terms,
+                        $estete->id,
+                        self::PREFIX);
+
+                    $enity->save();
+                }
             }
 
         } catch (\Exception $e) {
-
+            error_log($e->getMessage(), null, $e->getTraceAsString(), $e->getFile());
         }
     }
 
@@ -86,7 +95,7 @@ class DeutscheWohnen
                     WHERE a.meta_key = '_crawl_id' AND a.meta_value = '{$estate_id}' 
                     AND b.meta_key = '_crawl_class' AND b.meta_value = '{$class}'", ARRAY_A);
 
-        if (empty($result) && array_key_exists('post_id', $result[0])) {
+        if (empty($result) || ! array_key_exists('post_id', $result[0])) {
             return false;
         }
 
