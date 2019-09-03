@@ -12,6 +12,16 @@ class Wohnraumkarte extends BaseWebsite
     const PREFIX = 'wohnraumkarte';
 
     /**
+     * @var ProxyService
+     */
+    private $proxyService;
+
+    public function __construct(ProxyService $proxy = null)
+    {
+        $this->proxyService = $proxy;
+    }
+
+    /**
      * @return bool|string
      * @throws \Exception
      */
@@ -23,6 +33,9 @@ class Wohnraumkarte extends BaseWebsite
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $this->getBody($crawl_id));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        if ($this->proxyService) {
+            curl_setopt($ch, CURLOPT_PROXY, $this->proxyService->getProxyString());
+        }
 
         $result = curl_exec($ch);
 
@@ -37,7 +50,7 @@ class Wohnraumkarte extends BaseWebsite
 
     public function updateEstates()
     {
-        $paginator = new WohnraumkartePaginator();
+        $paginator = new WohnraumkartePaginator($this->proxyService);
 
         try {
 //            $list = $paginator->getEstates(25);

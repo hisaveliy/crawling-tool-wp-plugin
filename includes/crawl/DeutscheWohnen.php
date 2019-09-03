@@ -11,6 +11,16 @@ class DeutscheWohnen
     const PREFIX = 'deutschewohnen';
 
     /**
+     * @var ProxyService
+     */
+    private $proxyService;
+
+    public function __construct(ProxyService $proxyService)
+    {
+        $this->proxyService = $proxyService;
+    }
+
+    /**
      * @return bool|string
      * @throws Exception
      */
@@ -23,6 +33,9 @@ class DeutscheWohnen
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $this->getBody());
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json; charset=utf-8'));
+        if ($this->proxyService) {
+            curl_setopt($ch, CURLOPT_PROXY, $this->proxyService->getProxyString());
+        }
 
         $result = curl_exec($ch);
 

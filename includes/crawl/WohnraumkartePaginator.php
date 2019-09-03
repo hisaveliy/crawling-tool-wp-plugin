@@ -8,6 +8,16 @@ class WohnraumkartePaginator
 {
 
     /**
+     * @var ProxyService
+     */
+    private $proxyService;
+
+    public function __construct(ProxyService $proxyService = null)
+    {
+        $this->proxyService = $proxyService;
+    }
+
+    /**
      * @return bool|string
      * @throws \Exception
      */
@@ -19,6 +29,9 @@ class WohnraumkartePaginator
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $this->getBody($page));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        if ($this->proxyService) {
+            curl_setopt($ch, CURLOPT_PROXY, $this->proxyService->getProxyString());
+        }
 
         $result = curl_exec($ch);
 
