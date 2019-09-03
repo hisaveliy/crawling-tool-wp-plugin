@@ -45,6 +45,8 @@ class TermEstate
      */
     public function add($taxonomy, $term)
     {
-        $this->terms[$taxonomy] = $term;
+        if ($term) {
+            $this->terms[$taxonomy] = $term;
+        }
     }
 }

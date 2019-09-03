@@ -3,6 +3,8 @@
 
 namespace Crawling_WP;
 
+use Exception;
+
 class DeutscheWohnen
 {
 
@@ -10,7 +12,7 @@ class DeutscheWohnen
 
     /**
      * @return bool|string
-     * @throws \Exception
+     * @throws Exception
      */
     public function getHtml()
     {
@@ -25,7 +27,7 @@ class DeutscheWohnen
         $result = curl_exec($ch);
 
         if (curl_error($ch) !== "") {
-            throw new \Exception(curl_error($ch));
+            throw new Exception(curl_error($ch));
         };
 
         curl_close($ch);
@@ -39,7 +41,7 @@ class DeutscheWohnen
             $list = json_decode($this->getHtml());
 
             foreach ($list as $estete) {
-                $id = self::isEstateExist($estete->id);
+                $id = CrawlHelper::isEstateExist($estete->id, self::PREFIX);
 
                 if ($id) {
                     if (RentEstate::getTotalRent($id) !== $estete->price) {
@@ -55,7 +57,7 @@ class DeutscheWohnen
                     $terms       = self::getEstateTerms($estete);
                     $contacts    = new ContactsEstate(true, false, false, true);
 
-                    $enity = new Estate(
+                    $entity = new Estate(
                         $id,
                         $estete->title,
                         $description,
@@ -68,36 +70,13 @@ class DeutscheWohnen
                         $estete->id,
                         self::PREFIX);
 
-                    $enity->save();
+                    $entity->save();
                 }
             }
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             error_log($e->getMessage(), null, $e->getTraceAsString(), $e->getFile());
         }
-    }
-
-    /**
-     * @param $estate_id
-     * @return bool|int
-     */
-    public static function isEstateExist($estate_id)
-    {
-        $class = self::PREFIX;
-        global $wpdb;
-
-        $result = $wpdb->get_results(
-            "SELECT *
-                    FROM `{$wpdb->prefix}postmeta` as a
-                             INNER JOIN `{$wpdb->prefix}postmeta` as b ON a.post_id = b.post_id
-                    WHERE a.meta_key = '_crawl_id' AND a.meta_value = '{$estate_id}' 
-                    AND b.meta_key = '_crawl_class' AND b.meta_value = '{$class}'", ARRAY_A);
-
-        if (empty($result) || ! array_key_exists('post_id', $result[0])) {
-            return false;
-        }
-
-        return $result[0]['post_id'];
     }
 
     /**
@@ -226,7 +205,7 @@ class DeutscheWohnen
 
         $html = substr($html, $start, $end - $start);
 
-        return CrawlHelper::getContentByClassName($html, 'object-detail__equipment-description');
+        return CrawlHelper::getContentByAttribute($html, 'object-detail__equipment-description');
     }
 
     /**

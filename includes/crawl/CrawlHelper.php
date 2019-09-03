@@ -12,7 +12,7 @@ class CrawlHelper
      * @param string $attribute
      * @return array
      */
-    public static function getContentByClassName($html, $attribute)
+    public static function getContentByAttribute($html, $attribute)
     {
         $result = [];
         $start  = 0;
@@ -50,6 +50,27 @@ class CrawlHelper
 
     /**
      * @param $html
+     * @param $th
+     * @return string
+     */
+    public static function getTableValueTd($html, $th)
+    {
+        $startTag = '<th>'.$th.'</th>';
+
+        $start = strpos($html, $startTag) + strlen($startTag);
+        if ($start === strlen($startTag)) {
+            return false;
+        }
+        $start = strpos($html, '<td', $start) + 3;
+        $start = strpos($html, '>', $start) + 1;
+
+        $end = strpos($html, '</td>', $start);
+
+        return substr($html, $start, $end - $start);
+    }
+
+    /**
+     * @param $html
      * @param $var
      * @return bool
      */
@@ -60,5 +81,29 @@ class CrawlHelper
         }
 
         return null;
+    }
+
+
+    /**
+     * @param $estate_id
+     * @param $class
+     * @return bool|int
+     */
+    public static function isEstateExist($estate_id, $class)
+    {
+        global $wpdb;
+
+        $result = $wpdb->get_results(
+            "SELECT *
+                    FROM `{$wpdb->prefix}postmeta` as a
+                             INNER JOIN `{$wpdb->prefix}postmeta` as b ON a.post_id = b.post_id
+                    WHERE a.meta_key = '_crawl_id' AND a.meta_value = '{$estate_id}' 
+                    AND b.meta_key = '_crawl_class' AND b.meta_value = '{$class}'", ARRAY_A);
+
+        if (empty($result) || ! array_key_exists('post_id', $result[0])) {
+            return false;
+        }
+
+        return $result[0]['post_id'];
     }
 }
