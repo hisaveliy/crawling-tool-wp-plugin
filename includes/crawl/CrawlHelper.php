@@ -83,7 +83,6 @@ class CrawlHelper
         return null;
     }
 
-
     /**
      * @param $estate_id
      * @param $class
@@ -105,5 +104,51 @@ class CrawlHelper
         }
 
         return $result[0]['post_id'];
+    }
+
+    /**
+     * @param array $estates
+     * @param $class
+     * @return array
+     */
+    public static function getListToDrafting(array $estates, $class)
+    {
+        global $wpdb;
+
+        $ids = implode(', ', array_map(function ($estate) {
+            return "'{$estate->id}'";
+        }, $estates));
+
+
+        $query = "SELECT a.post_id
+                    FROM `{$wpdb->prefix}postmeta` as a
+                             INNER JOIN `{$wpdb->prefix}postmeta` as b ON a.post_id = b.post_id
+                    WHERE a.meta_key = '_crawl_id' AND a.meta_value NOT IN ({$ids})
+                    AND b.meta_key = '_crawl_class' AND b.meta_value = '{$class}'";
+
+        $result = $wpdb->get_results($query, ARRAY_N);
+
+        if (empty($result)) {
+            return [];
+        }
+
+        return $result[0];
+    }
+
+    /**
+     * @param array $ids
+     * @return bool|int
+     */
+    public static function draftList(array $ids)
+    {
+        global $wpdb;
+
+        $ids = implode(', ', array_map(function ($id) {
+            return "'{$id}'";
+        }, $ids));
+
+        $query = "UPDATE `{$wpdb->prefix}posts` SET post_status = 'draft' WHERE ID IN ({$ids})";
+
+        return $wpdb->query($query);
     }
 }

@@ -40,9 +40,17 @@ class RentEstate
      */
     public static function getTotalRent($post_id)
     {
-        $price    = get_post_meta($post_id, '_iwp_price', true);
         $addition = get_post_meta($post_id, '_iwp_utilities', true);
 
-        return $price + $addition;
+        return self::getMonthlyPrice($post_id) + $addition;
+    }
+
+    /**
+     * @param $post_id
+     * @return float
+     */
+    public static function getMonthlyPrice($post_id)
+    {
+        return get_post_meta($post_id, '_iwp_price', true);
     }
 }

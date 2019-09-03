@@ -1,7 +1,7 @@
 <?php
 
 if (! defined('Crawling_WP\PLUGIN_DIR')) {
-    define('Crawling_WP\PLUGIN_DIR','../../');
+    define('Crawling_WP\PLUGIN_DIR', '../../');
 }
 
 
@@ -18,6 +18,8 @@ $plugin_classes = [
     \Crawling_WP\TermEstate::class,
     \Crawling_WP\Estate::class,
     \Crawling_WP\BaseWebsite::class,
+    \Crawling_WP\Wohnraumkarte::class,
+    \Crawling_WP\WohnraumkartePaginator::class,
 ];
 
 

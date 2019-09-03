@@ -56,7 +56,7 @@ class WohnraumkartePaginator
             $estates = array_merge($estates, $current);
             $page++;
 
-            if ($max && count($estates) < $max) {
+            if ($max && count($estates) >= $max) {
                 break;
             }
         }
@@ -155,5 +155,5 @@ class WohnraumkartePaginator
     }
 }
 
-$e = new WohnraumkartePaginator();
-$e->getEstates();
+//$e = new WohnraumkartePaginator();
+//$e->getEstates();
