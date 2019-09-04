@@ -15,6 +15,10 @@ class DeutscheWohnen
      */
     private $proxyService;
 
+    /**
+     * DeutscheWohnen constructor.
+     * @param ProxyService $proxyService
+     */
     public function __construct(ProxyService $proxyService)
     {
         $this->proxyService = $proxyService;

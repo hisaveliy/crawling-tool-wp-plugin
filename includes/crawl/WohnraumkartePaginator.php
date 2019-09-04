@@ -12,6 +12,10 @@ class WohnraumkartePaginator
      */
     private $proxyService;
 
+    /**
+     * WohnraumkartePaginator constructor.
+     * @param ProxyService|null $proxyService
+     */
     public function __construct(ProxyService $proxyService = null)
     {
         $this->proxyService = $proxyService;
@@ -167,6 +171,3 @@ class WohnraumkartePaginator
         ]);
     }
 }
-
-//$e = new WohnraumkartePaginator();
-//$e->getEstates();

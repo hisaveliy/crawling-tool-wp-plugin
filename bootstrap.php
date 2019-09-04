@@ -62,7 +62,7 @@ define(__NAMESPACE__ . '\COMPOSER', false);
  * Native Settings page
  */
 
-define(__NAMESPACE__ . '\SETTINGS_PAGE', false);
+define(__NAMESPACE__ . '\SETTINGS_PAGE', true);
 
 /**
  * Woocommerce Settings

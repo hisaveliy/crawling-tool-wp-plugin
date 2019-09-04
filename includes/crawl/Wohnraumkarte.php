@@ -6,6 +6,8 @@ namespace Crawling_WP;
 
 //include_once './autoload.php';
 
+use Exception;
+
 class Wohnraumkarte extends BaseWebsite
 {
 
@@ -16,6 +18,10 @@ class Wohnraumkarte extends BaseWebsite
      */
     private $proxyService;
 
+    /**
+     * Wohnraumkarte constructor.
+     * @param ProxyService|null $proxy
+     */
     public function __construct(ProxyService $proxy = null)
     {
         $this->proxyService = $proxy;
@@ -23,7 +29,7 @@ class Wohnraumkarte extends BaseWebsite
 
     /**
      * @return bool|string
-     * @throws \Exception
+     * @throws Exception
      */
     public function getEstateHtml($crawl_id)
     {
@@ -40,7 +46,7 @@ class Wohnraumkarte extends BaseWebsite
         $result = curl_exec($ch);
 
         if (curl_error($ch) !== "") {
-            throw new \Exception(curl_error($ch));
+            throw new Exception(curl_error($ch));
         };
 
         curl_close($ch);
@@ -53,15 +59,8 @@ class Wohnraumkarte extends BaseWebsite
         $paginator = new WohnraumkartePaginator($this->proxyService);
 
         try {
-//            $list = $paginator->getEstates(25);
-            $list = [
-                (object)[
-                    'id'    => 300597,
-                    'price' => 520
-                ]
-            ];
-
-            $old = CrawlHelper::getListToDrafting($list, self::PREFIX);
+            $list = $paginator->getEstates(25);
+            $old  = CrawlHelper::getListToDrafting($list, self::PREFIX);
 
             if (! empty($old)) {
                 CrawlHelper::draftList($old);
@@ -103,7 +102,7 @@ class Wohnraumkarte extends BaseWebsite
                     $entity->save();
                 }
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             error_log($e->getMessage(), null, $e->getTraceAsString(), $e->getFile());
         }
     }
@@ -325,6 +324,3 @@ class Wohnraumkarte extends BaseWebsite
         return intval(round($float, 0));
     }
 }
-
-//$e = new Wohnraumkarte();
-//$e->updateEstates();

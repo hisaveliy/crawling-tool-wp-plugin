@@ -8,276 +8,292 @@
 
 namespace Crawling_WP;
 
-use Hamcrest\Util;
-
-class Settings_Page {
-
-
-	public static $page_title = '';
-
-
-	public static $menu_title = '';
-
-
-	public static $page_slug = '';
-
-
-	protected static $instance = null;
-
-	/**
-	 * Return an instance of this class.
-	 *
-	 * @since     1.0.0
-	 *
-	 * @return    object    A single instance of this class.
-	 * @throws \Exception
-	 */
-	public static function instance() {
-
-		// If the single instance hasn't been set, set it now.
-		if ( null == self::$instance ) {
-			self::$instance = new self;
-		}
-
-		return self::$instance;
-	}
-
-
-	/**
-	 * @since 1.0.0
-	 * @throws \Exception
-	 */
-	public function __construct() {
-		self::$page_title = 'TourCMS Settings';
-		self::$menu_title = 'TourCMS';
-		self::$page_slug = PREFIX . '-settings';
-
-		add_action('admin_menu', __CLASS__ . '::add_admin');
-	}
-
-	public static function add_admin() {
-		$options = self::get_options();
-
-		if (array_key_exists('page', $_GET)
-		    && $_GET['page'] === self::$page_slug
-		    && array_key_exists('formaction', $_REQUEST)
-		    && 'save' === $_REQUEST['formaction']) {
 
-			foreach ($options as $value) {
-				if( isset( $_REQUEST[ $value['id'] ] ) ) {
-					update_option( $value['id'], $_REQUEST[ $value['id'] ]  );
-				} else {
-					delete_option( $value['id'] );
-				}
-			}
+class Settings_Page
+{
+
+
+    public static $page_title = '';
+
+
+    public static $menu_title = '';
+
+
+    public static $page_slug = '';
+
+
+    protected static $instance = null;
+
+    /**
+     * Return an instance of this class.
+     *
+     * @return    object    A single instance of this class.
+     * @throws \Exception
+     * @since     1.0.0
+     *
+     */
+    public static function instance()
+    {
+
+        // If the single instance hasn't been set, set it now.
+        if (null == self::$instance) {
+            self::$instance = new self;
+        }
+
+        return self::$instance;
+    }
+
+
+    /**
+     * @throws \Exception
+     * @since 1.0.0
+     */
+    public function __construct()
+    {
+        self::$page_title = 'Crawling Settings';
+        self::$menu_title = 'CrawlingTools';
+        self::$page_slug  = PREFIX.'-settings';
+
+        add_action('admin_menu', __CLASS__.'::add_admin');
+    }
+
+    public static function add_admin()
+    {
+        $options = self::get_options();
+
+        if (array_key_exists('page', $_GET)
+            && $_GET['page'] === self::$page_slug
+            && array_key_exists('formaction', $_REQUEST)
+            && 'save' === $_REQUEST['formaction']) {
+
+            foreach ($options as $value) {
+                if (isset($_REQUEST[$value['id']])) {
+                    update_option($value['id'], $_REQUEST[$value['id']]);
+                } else {
+                    delete_option($value['id']);
+                }
+            }
+
+            header("Location: themes.php?page=".self::$page_slug."&saved=true");
+            die;
+        }
+
+        add_options_page(
+            self::$page_title,
+            self::$menu_title,
+            'edit_posts',
+            self::$page_slug,
+            __CLASS__.'::admin'
+        );
+    }
+
+
+    private static function get_id($name = '')
+    {
+        return PREFIX.'_'.$name;
+    }
+
+
+    /**
+     * @return array
+     */
+    private static function get_options()
+    {
+        return [
+//            [
+//                'label' => 'Scheduler Settings',
+//                'type'  => 'headline-3',
+//            ],
+            //            [
+            //                'id'    => self::get_id('headline'),
+            //                'type'  => 'text',
+            //                'label' => 'Headline'
+            //            ],
+            [
+                'id'    => self::get_id('scheduler_period'),
+                'type'  => 'number',
+                'label' => 'Sync interval (in days)',
+                'std'   => '4'
+            ],
+            [
+                'id'    => self::get_id('proxy_api_key'),
+                'type'  => 'text',
+                'label' => 'Proxy API KEY'
+            ],
+        ];
+    }
 
-			header("Location: themes.php?page=" . self::$page_slug . "&saved=true");
-			die;
-		}
 
-		add_options_page(
-			self::$page_title,
-			self::$menu_title,
-			'edit_posts',
-			self::$page_slug,
-			__CLASS__ . '::admin'
-		);
-	}
+    /**
+     * @return false|string
+     */
+    private static function render_fields()
+    {
+        $options = self::get_options();
+
+        ob_start();
+
+        foreach ($options as $value) :
+
+            switch ($value['type']) :
+                case 'headline-3':
+                    self::create_suf_headline_3($value);
+                    break;
+
+                case 'headline-4':
+                    self::create_suf_headline_4($value);
+                    break;
 
+                case 'textarea':
+                    self::create_section_for_textarea($value);
+                    break;
+
+                case 'radio':
+                    self::create_section_for_radio($value);
+                    break;
 
-	private static function get_id($name = '') {
-		return PREFIX . '_' . $name;
-	}
+                default:
+                    self::create_section_for_default($value);
+                    break;
+            endswitch;
 
+        endforeach;
 
-	/**
-	 * @return array
-	 */
-	private static function get_options() {
-		return [
-			[
-				'label' => 'General',
-				'type' => 'headline-3',
-			],
-			[
-				'id'  => self::get_id('headline'),
-				'type'  => 'text',
-				'label' => 'Headline'
-			],
-			[
-				'id' => self::get_id('email'),
-				'type' => 'email',
-				'label' => 'Email'
-			],
-			[
-				'id' => self::get_id('password'),
-				'type' => 'password',
-				'label' => 'Password'
-			],
-		];
-	}
+        return ob_get_clean();
+    }
 
+    private static function create_form()
+    {
 
-	/**
-	 * @return false|string
-	 */
-	private static function render_fields() {
-		$options = self::get_options();
+        Utility::tpl('includes/settings-page/sections/form', ['fields' => self::render_fields()]);
 
-		ob_start();
+    }
 
-		foreach ($options as $value) :
 
-			switch ($value['type']) :
-				case 'headline-3':
-					self::create_suf_headline_3($value);
-					break;
+    /**
+     * @param array $value
+     */
+    private static function create_opening_tag($value = array())
+    {
+        $group_class = "";
 
-				case 'headline-4':
-					self::create_suf_headline_4($value);
-					break;
+        if (isset($value['grouping'])) {
+            $group_class = "suf-grouping-rhs";
+        }
 
-				case 'textarea':
-					self::create_section_for_textarea($value);
-					break;
+        echo '<div class="suf-section fix">'."\n";
 
-				case 'radio':
-					self::create_section_for_radio($value);
-					break;
+        if ($group_class != "") {
+            echo "<div class='$group_class fix'>\n";
+        }
+    }
 
-				default:
-					self::create_section_for_default($value);
-					break;
-			endswitch;
 
-		endforeach;
+    /**
+     * @param array $value
+     */
+    private static function create_closing_tag($value = array())
+    {
 
-		return ob_get_clean();
-	}
+        if (isset($value['desc']) && ! (isset($value['type']) && $value['type'] == 'checkbox')) {
+            echo '<p>'.$value['desc']."</p><br />";
+        }
 
-	private static function create_form() {
+        if (isset($value['note'])) {
+            echo "<span class=\"note\">".$value['note']."</span><br />";
+        }
 
-		Utility::tpl('includes/settings-page/sections/form', [ 'fields' => self::render_fields() ]);
+        if (isset($value['grouping'])) {
+            echo "</div>\n";
+        }
 
-	}
+        echo "</div>\n";
+    }
 
 
-	/**
-	 * @param array $value
-	 */
-	private static function create_opening_tag($value = array()) {
-		$group_class = "";
+    /**
+     * @param array $value
+     */
+    private static function create_suf_headline_3($value = array())
+    {
+        Utility::tpl('includes/settings-page/sections/headline-3', ['value' => $value]);
+    }
 
-		if (isset($value['grouping'])) {
-			$group_class = "suf-grouping-rhs";
-		}
 
-		echo '<div class="suf-section fix">'."\n";
+    /**
+     * @param array $value
+     */
+    private static function create_suf_headline_4($value = array())
+    {
+        Utility::tpl('includes/settings-page/sections/headline-4', ['value' => $value]);
+    }
 
-		if ($group_class != "") {
-			echo "<div class='$group_class fix'>\n";
-		}
-	}
+    /**
+     * @param array $value
+     */
+    private static function create_section_for_default($value = array())
+    {
+        self::create_opening_tag($value);
 
+        Utility::tpl('includes/settings-page/sections/default', ['value' => $value]);
 
-	/**
-	 * @param array $value
-	 */
-	private static function create_closing_tag($value = array()) {
+        self::create_closing_tag($value);
+    }
 
-		if (isset($value['desc']) && !(isset($value['type']) && $value['type'] == 'checkbox')) {
-			echo '<p>' . $value['desc']."</p><br />";
-		}
 
-		if (isset($value['note'])) {
-			echo "<span class=\"note\">".$value['note']."</span><br />";
-		}
+    /**
+     * @param array $value
+     */
+    private static function create_section_for_textarea($value = array())
+    {
+        self::create_opening_tag($value);
 
-		if (isset($value['grouping'])) {
-			echo "</div>\n";
-		}
+        Utility::tpl('includes/settings-page/sections/textarea', ['value' => $value]);
 
-		echo "</div>\n";
-	}
+        self::create_closing_tag($value);
+    }
 
 
-	/**
-	 * @param array $value
-	 */
-	private static function create_suf_headline_3($value = array()) {
-		Utility::tpl('includes/settings-page/sections/headline-3', [ 'value' => $value ]);
-	}
+    private static function create_section_for_radio($value = array())
+    {
+        self::create_opening_tag($value);
 
+        foreach ($value['options'] as $current_value => $label) {
+            Utility::tpl('includes/settings-page/sections/radio', [
+                'value'         => $value,
+                'current_value' => $current_value,
+                'label'         => $label,
+            ]);
+        }
 
-	/**
-	 * @param array $value
-	 */
-	private static function create_suf_headline_4($value = array()) {
-		Utility::tpl('includes/settings-page/sections/headline-4', [ 'value' => $value ]);
-	}
+        self::create_closing_tag($value);
+    }
 
-	/**
-	 * @param array $value
-	 */
-	private static function create_section_for_default($value = array()) {
-		self::create_opening_tag($value);
+    public static function admin()
+    {
 
-		Utility::tpl('includes/settings-page/sections/default', [ 'value' => $value ]);
+        if (array_key_exists('saved', $_REQUEST) && $_REQUEST['saved']) {
+            ?>
 
-		self::create_closing_tag($value);
-	}
+            <div id="message" class="updated fade">
+                <p><strong><?php _e('Settings updated', 'tourismtiger-tourcms-addon'); ?></strong></p>
+            </div>
 
+            <?php
+        }
+        ?>
 
-	/**
-	 * @param array $value
-	 */
-	private static function create_section_for_textarea($value = array()) {
-		self::create_opening_tag($value);
+        <div class="wrap">
+            <h1><?php _e('CrawlingTools Plugin Settings', 'tourismtiger-tourcms-addon'); ?></h1>
 
-		Utility::tpl('includes/settings-page/sections/textarea', [ 'value' => $value ]);
-
-		self::create_closing_tag($value);
-	}
-
-
-	private static function create_section_for_radio($value = array()) {
-		self::create_opening_tag($value);
-
-		foreach ($value['options'] as $current_value => $label) {
-			Utility::tpl('includes/settings-page/sections/radio', [
-				'value' => $value,
-				'current_value' => $current_value,
-				'label' => $label,
-			]);
-		}
-
-		self::create_closing_tag($value);
-	}
-
-	public static function admin() {
-
-		if (array_key_exists('saved', $_REQUEST) && $_REQUEST['saved']) {
-			?>
-
-          <div id="message" class="updated fade">
-            <p><strong><?php _e( 'Settings updated', 'tourismtiger-tourcms-addon' ); ?></strong></p>
-          </div>
-
-			<?php
-		}
-		?>
-
-      <div class="wrap">
-        <h1><?php _e( 'Savellab Simple Plugin Settings', 'tourismtiger-tourcms-addon' ); ?></h1>
-
-        <div class="options">
-			<?php self::create_form(); ?>
-        </div><!-- mnt-options -->
-      </div><!-- wrap -->
-	<?php } // end function mynewtheme_admin()
+            <div class="options">
+                <?php self::create_form(); ?>
+            </div><!-- mnt-options -->
+        </div><!-- wrap -->
+    <?php } // end function mynewtheme_admin()
 }
 
 try {
-	Settings_Page::instance();
+    Settings_Page::instance();
 } catch (\Exception $e) {
 }

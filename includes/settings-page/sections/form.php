@@ -17,7 +17,7 @@
         name="save"
         type="button"
         value="<?php _e('Save', 'savellab');?> "
-        class="button"
+        class="button button-primary"
         onclick="submit_form(this, document.forms['form'])" />
 
     <input type="hidden" name="formaction" value="default" />
