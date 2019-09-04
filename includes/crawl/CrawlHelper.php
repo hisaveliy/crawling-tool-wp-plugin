@@ -151,4 +151,30 @@ class CrawlHelper
 
         return $wpdb->query($query);
     }
+
+    /**
+     * @param $prefix
+     * @return bool|string
+     */
+    public static function getCrawlClass($prefix)
+    {
+        $sites = [
+            DeutscheWohnen::PREFIX => DeutscheWohnen::class,
+            Wohnraumkarte::PREFIX  => Wohnraumkarte::class
+        ];
+
+        if (array_key_exists($prefix, $sites)) {
+            return $sites[$prefix];
+        }
+
+        return false;
+    }
+
+    /**
+     * @return ProxyService
+     */
+    public static function getProxyService()
+    {
+        return new ProxyService(false);
+    }
 }

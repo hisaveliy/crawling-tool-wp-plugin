@@ -74,7 +74,7 @@ class Settings_Page
                 }
             }
 
-            header("Location: themes.php?page=".self::$page_slug."&saved=true");
+            header("Location: options-general.php?page=".self::$page_slug."&saved=true");
             die;
         }
 

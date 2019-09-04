@@ -28,6 +28,7 @@ class Wohnraumkarte extends BaseWebsite
     }
 
     /**
+     * @param $crawl_id
      * @return bool|string
      * @throws Exception
      */
@@ -66,45 +67,59 @@ class Wohnraumkarte extends BaseWebsite
                 CrawlHelper::draftList($old);
             }
 
-            foreach ($list as $estete) {
-                $id   = CrawlHelper::isEstateExist($estete->id, self::PREFIX);
-                $html = self::getEstateHtml($estete->id);
+            foreach ($list as $estate) {
+                $id   = CrawlHelper::isEstateExist($estate->id, self::PREFIX);
+                $html = $this->getEstateHtml($estate->id);
 
                 if ($id) {
-                    if (intval(self::toInt(RentEstate::getMonthlyPrice($id))) !== intval($estete->price)) {
+                    if (intval(self::toInt(RentEstate::getMonthlyPrice($id))) !== intval($estate->price)) {
                         self::getEstateRent($html)->save($id);
                     }
 
                     continue;
                 } else {
-                    $address     = self::getEstateAddress($html);
-                    $images      = self::getImages($html);
-                    $gallery     = self::getEstateGallery($images);
-                    $rent        = self::getEstateRent($html);
-                    $details     = self::getEstateDetails($html);
-                    $description = self::getEstateDescription($html);
-                    $terms       = self::getEstateTerms($html);
-                    $contacts    = self::getEstateContacts($html);
-
-                    $entity = new Estate(
-                        $id,
-                        self::getTitle($html),
-                        $description,
-                        $address,
-                        $gallery,
-                        $contacts,
-                        $details,
-                        $rent,
-                        $terms,
-                        $estete->id,
-                        self::PREFIX);
-
-                    $entity->save();
+                    $this->addEstate($estate);
                 }
             }
         } catch (Exception $e) {
             error_log($e->getMessage(), null, $e->getTraceAsString(), $e->getFile());
         }
+    }
+
+    /**
+     * @param $estate
+     * @return Estate
+     * @throws Exception
+     */
+    public function addEstate($estate)
+    {
+        $html = $this->getEstateHtml($estate->id);
+
+        $address     = self::getEstateAddress($html);
+        $images      = self::getImages($html);
+        $gallery     = self::getEstateGallery($images);
+        $rent        = self::getEstateRent($html);
+        $details     = self::getEstateDetails($html);
+        $description = self::getEstateDescription($html);
+        $terms       = self::getEstateTerms($html);
+        $contacts    = self::getEstateContacts($html);
+
+        $entity = new Estate(
+            false,
+            self::getTitle($html),
+            $description,
+            $address,
+            $gallery,
+            $contacts,
+            $details,
+            $rent,
+            $terms,
+            $estate->id,
+            self::PREFIX);
+
+        $entity->save();
+
+        return $entity;
     }
 
     /**
@@ -116,6 +131,7 @@ class Wohnraumkarte extends BaseWebsite
     }
 
     /**
+     * @param $crawl_id
      * @return string
      */
     protected function getBody($crawl_id)
@@ -319,7 +335,7 @@ class Wohnraumkarte extends BaseWebsite
      * @param $float
      * @return int
      */
-    protected static function toInt($float)
+    public static function toInt($float)
     {
         return intval(round($float, 0));
     }

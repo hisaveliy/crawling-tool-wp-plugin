@@ -5,7 +5,7 @@ namespace Crawling_WP;
 
 use Exception;
 
-class DeutscheWohnen
+class DeutscheWohnen extends BaseWebsite
 {
 
     const PREFIX = 'deutschewohnen';
@@ -52,48 +52,62 @@ class DeutscheWohnen
         return $result;
     }
 
+    /**
+     * Update All Estates
+     */
     public function updateEstates()
     {
         try {
             $list = json_decode($this->getHtml());
 
-            foreach ($list as $estete) {
-                $id = CrawlHelper::isEstateExist($estete->id, self::PREFIX);
+            foreach ($list as $estate) {
+                $id = CrawlHelper::isEstateExist($estate->id, self::PREFIX);
 
                 if ($id) {
-                    if (RentEstate::getTotalRent($id) !== $estete->price) {
-                        self::getEstateRent($estete)->save($id);
+                    if (RentEstate::getTotalRent($id) !== $estate->price) {
+                        self::getEstateRent($estate)->save($id);
                     }
                     continue;
                 } else {
-                    $address     = self::getEstateAddress($estete);
-                    $gallery     = self::getEstateGallery($estete->images);
-                    $rent        = self::getEstateRent($estete);
-                    $details     = self::getEstateDetails($estete);
-                    $description = self::getEstateDescription($estete->id);
-                    $terms       = self::getEstateTerms($estete);
-                    $contacts    = new ContactsEstate(true, false, false, true);
-
-                    $entity = new Estate(
-                        $id,
-                        $estete->title,
-                        $description,
-                        $address,
-                        $gallery,
-                        $contacts,
-                        $details,
-                        $rent,
-                        $terms,
-                        $estete->id,
-                        self::PREFIX);
-
-                    $entity->save();
+                    $this->addEstate($estate);
                 }
             }
 
         } catch (Exception $e) {
             error_log($e->getMessage(), null, $e->getTraceAsString(), $e->getFile());
         }
+    }
+
+    /**
+     * @param object $estate
+     * @return Estate
+     */
+    public function addEstate($estate)
+    {
+        $address     = self::getEstateAddress($estate);
+        $gallery     = self::getEstateGallery($estate->images);
+        $rent        = self::getEstateRent($estate);
+        $details     = self::getEstateDetails($estate);
+        $description = self::getEstateDescription($estate->id);
+        $terms       = self::getEstateTerms($estate);
+        $contacts    = new ContactsEstate(true, false, false, true);
+
+        $entity = new Estate(
+            false,
+            $estate->title,
+            $description,
+            $address,
+            $gallery,
+            $contacts,
+            $details,
+            $rent,
+            $terms,
+            $estate->id,
+            self::PREFIX);
+
+        $entity->save();
+
+        return $entity;
     }
 
     /**

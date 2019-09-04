@@ -61,6 +61,9 @@ class Core {
 		//enqueue css and js files
 		Assets::enqueue();
 
+
+		Scheduler::instance();
+
 		//process ajax requests
 		Requests::ajax();
 
@@ -313,7 +316,9 @@ class Core {
 				'</a>'
 			));
 		}
-	}
+
+		Scheduler::addScheduleEvent();
+    }
 
 
 
@@ -324,7 +329,8 @@ class Core {
 	 * @return void
 	 */
 	public static function on_deactivation(){
-	}
+        wp_clear_scheduled_hook( Scheduler::HOOK);
+    }
 
 
 

@@ -11,6 +11,8 @@ abstract class BaseWebsite
 
     abstract public function updateEstates();
 
+    abstract public function addEstate($estate);
+
     abstract protected function getUrl();
 
     abstract public static function getEstateAddress($html): AddressEstate;
