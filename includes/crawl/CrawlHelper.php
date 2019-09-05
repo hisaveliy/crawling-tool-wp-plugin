@@ -4,6 +4,8 @@
 namespace Crawling_WP;
 
 
+use Exception;
+
 class CrawlHelper
 {
 
@@ -171,10 +173,16 @@ class CrawlHelper
     }
 
     /**
-     * @return ProxyService
+     * @return ProxyService|null
      */
     public static function getProxyService()
     {
-        return new ProxyService(false);
+        $key = get_option(PREFIX.'_proxy_api_key') ?? false;
+
+        try {
+            return new ProxyService($key);
+        } catch (Exception $e) {
+            return null;
+        }
     }
 }

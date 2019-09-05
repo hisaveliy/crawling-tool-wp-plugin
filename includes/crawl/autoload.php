@@ -9,6 +9,7 @@ use const Crawling_WP\PLUGIN_DIR;
 
 $plugin_classes = [
     \Crawling_WP\ContactsEstate::class,
+    \Crawling_WP\BaseWebsite::class,
     \Crawling_WP\DeutscheWohnen::class,
     \Crawling_WP\AddressEstate::class,
     \Crawling_WP\GalleryEstate::class,
@@ -17,7 +18,6 @@ $plugin_classes = [
     \Crawling_WP\RentEstate::class,
     \Crawling_WP\TermEstate::class,
     \Crawling_WP\Estate::class,
-    \Crawling_WP\BaseWebsite::class,
     \Crawling_WP\Wohnraumkarte::class,
     \Crawling_WP\WohnraumkartePaginator::class,
     \Crawling_WP\ProxyService::class,

@@ -4,6 +4,8 @@
 namespace Crawling_WP;
 
 
+use Exception;
+
 class WohnraumkartePaginator
 {
 
@@ -23,7 +25,7 @@ class WohnraumkartePaginator
 
     /**
      * @return bool|string
-     * @throws \Exception
+     * @throws Exception
      */
     public function getHtml($page = 1)
     {
@@ -35,14 +37,14 @@ class WohnraumkartePaginator
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         if ($this->proxyService) {
             curl_setopt($ch, CURLOPT_PROXY, $this->proxyService->getProxyString());
+            curl_setopt($ch, CURLOPT_PROXYTYPE, $this->proxyService->getCurlProxyType());
         }
 
         $result = curl_exec($ch);
 
         if (curl_error($ch) !== "") {
-            throw new \Exception(curl_error($ch));
+            throw new Exception(curl_error($ch));
         };
-
         curl_close($ch);
 
         return $result;
@@ -51,7 +53,7 @@ class WohnraumkartePaginator
     /**
      * @param bool $max
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     public function getEstates($max = false)
     {
@@ -61,7 +63,7 @@ class WohnraumkartePaginator
         while (true) {
             try {
                 $current = $this->getEstateFrom($this->getHtml($page));
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 error_log($e->getMessage(), null, $e->getTraceAsString(), $e->getFile());
                 $current = [];
             }

@@ -1,14 +1,12 @@
 <?php
-/**
- * This is responsible for processing AJAX or other requests
- *
- * @since 1.0.0
- */
 
 namespace Crawling_WP;
 
 
-//prevent direct access data leaks
+use Exception;
+use ReflectionClass;
+use ReflectionException;
+
 defined('ABSPATH') || exit;
 
 
@@ -79,11 +77,12 @@ class Scheduler
     public static function process_global_schedule()
     {
         self::crawlDeutscheWohnen();
+        self::crawlWohnraumkarte();
     }
 
     /**
      * @param $args
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public static function process_estates_schedule($args)
     {
@@ -99,7 +98,7 @@ class Scheduler
 
         foreach ($args['entities'] as $entity) {
             $proxy = CrawlHelper::getProxyService();
-            $class = new \ReflectionClass($crawl_site_name);
+            $class = new ReflectionClass($crawl_site_name);
 
             /** @var BaseWebsite $crawl_site */
             $crawl_site = $class->newInstanceArgs([$proxy]);
@@ -124,21 +123,22 @@ class Scheduler
                 CrawlHelper::draftList($old);
             }
 
-            foreach ($list as $estete) {
-                $id = CrawlHelper::isEstateExist($estete->id, DeutscheWohnen::PREFIX);
+            foreach ($list as $estate) {
+                $id = CrawlHelper::isEstateExist($estate->id, DeutscheWohnen::PREFIX);
 
                 if ($id) {
-                    if (RentEstate::getTotalRent($id) !== $estete->price) {
-                        DeutscheWohnen::getEstateRent($estete)->save($id);
+                    if (RentEstate::getTotalRent($id) !== $estate->price) {
+                        $html = $site->getEstateHtml($estate->id);
+                        DeutscheWohnen::getEstateRent($html)->save($id);
                     }
                     continue;
                 } else {
-                    $new_estates[] = $estete;
+                    $new_estates[] = $estate;
                 }
             }
 
             self::createSingleSchedule($new_estates, DeutscheWohnen::PREFIX);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             error_log($e->getMessage(), null, $e->getTraceAsString(), $e->getFile());
         }
     }
@@ -174,7 +174,7 @@ class Scheduler
             }
 
             self::createSingleSchedule($new_estates, Wohnraumkarte::PREFIX);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             error_log($e->getMessage(), null, $e->getTraceAsString(), $e->getFile());
         }
     }

@@ -39,6 +39,7 @@ class DeutscheWohnen extends BaseWebsite
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json; charset=utf-8'));
         if ($this->proxyService) {
             curl_setopt($ch, CURLOPT_PROXY, $this->proxyService->getProxyString());
+            curl_setopt($ch, CURLOPT_PROXYTYPE, $this->proxyService->getCurlProxyType());
         }
 
         $result = curl_exec($ch);
@@ -79,18 +80,26 @@ class DeutscheWohnen extends BaseWebsite
     }
 
     /**
-     * @param object $estate
+     * @param $estate
      * @return Estate
+     * @throws Exception
      */
     public function addEstate($estate)
     {
+        $html = $this->getEstateHtml($estate->id);
+
         $address     = self::getEstateAddress($estate);
         $gallery     = self::getEstateGallery($estate->images);
-        $rent        = self::getEstateRent($estate);
-        $details     = self::getEstateDetails($estate);
-        $description = self::getEstateDescription($estate->id);
-        $terms       = self::getEstateTerms($estate);
-        $contacts    = new ContactsEstate(true, false, false, true);
+        $rent        = self::getEstateRent($html);
+        $description = self::getEstateDescription($html);
+
+        $details = self::getEstateDetails($html);
+        $details->setArea($estate->area)->setRooms($estate->rooms);
+
+        $terms = self::getEstateTerms($estate);
+        $terms->add('iwp_status', strtolower($estate->commercializationType));
+
+        $contacts = new ContactsEstate(true, false, false, true);
 
         $entity = new Estate(
             false,
@@ -114,7 +123,7 @@ class DeutscheWohnen extends BaseWebsite
      * @param $estate
      * @return AddressEstate
      */
-    public static function getEstateAddress($estate)
+    public static function getEstateAddress($estate): AddressEstate
     {
         $street = $estate->address->street.' '.$estate->address->houseNumber;
 
@@ -125,7 +134,7 @@ class DeutscheWohnen extends BaseWebsite
      * @param array $images
      * @return GalleryEstate
      */
-    public static function getEstateGallery(array $images)
+    public static function getEstateGallery(array $images): GalleryEstate
     {
         $gallery = new GalleryEstate();
 
@@ -141,31 +150,28 @@ class DeutscheWohnen extends BaseWebsite
     }
 
     /**
-     * @param $estate
+     * @param $html
      * @return RentEstate
      */
-    public static function getEstateRent($estate)
+    public static function getEstateRent($html): RentEstate
     {
-        $html = self::getEstateHtml($estate->id);
-
         $price     = self::toFloat(CrawlHelper::getTableValue($html, 'Kaltmiete'));
         $addtional = self::toFloat(CrawlHelper::getTableValue($html, 'Nebenkosten'));
-        $depoist   = self::toFloat(CrawlHelper::getTableValue($html, 'Kaution'));
+        $deposit   = self::toFloat(CrawlHelper::getTableValue($html, 'Kaution'));
 
-        return new RentEstate($price, $addtional, $depoist);
+        return new RentEstate($price, $addtional, $deposit);
     }
 
     /**
-     * @param $estate
+     * @param $html
      * @return DetailsEstate
      */
-    public static function getEstateDetails($estate)
+    public static function getEstateDetails($html): DetailsEstate
     {
-        $html    = self::getEstateHtml($estate->id);
         $heating = self::toFloat(CrawlHelper::getTableValue($html, 'Verbrauchswert'));
         $date    = CrawlHelper::getTableValue($html, 'Verfügbar ab');
 
-        return new DetailsEstate($date, $estate->area, $estate->rooms, $heating);
+        return new DetailsEstate($date, null, null, $heating);
     }
 
     /**
@@ -181,13 +187,11 @@ class DeutscheWohnen extends BaseWebsite
     }
 
     /**
-     * @param string $estate_id
-     * @return string
+     * @param $html
+     * @return bool|string
      */
-    public static function getEstateDescription($estate_id)
+    public static function getEstateDescription($html)
     {
-        $html = self::getEstateHtml($estate_id);
-
         $startDivTag = 'object-detail__description';
 
         $startDiv = strpos($html, $startDivTag);
@@ -198,17 +202,15 @@ class DeutscheWohnen extends BaseWebsite
     }
 
     /**
-     * @param $estate
+     * @param $html
      * @return TermEstate
      */
-    public static function getEstateTerms($estate)
+    public static function getEstateTerms($html): TermEstate
     {
-        $html  = self::getEstateHtml($estate->id);
         $terms = new TermEstate();
 
         $terms->add('iwp_features', self::getFeatures($html));
         $terms->add('iwp_heatingtype', self::getHeating($html));
-        $terms->add('iwp_status', strtolower($estate->commercializationType));
 
         return $terms;
     }
@@ -257,10 +259,28 @@ class DeutscheWohnen extends BaseWebsite
 
     /**
      * @param $crawl_id
-     * @return false|string
+     * @return bool|string
+     * @throws Exception
      */
-    public static function getEstateHtml($crawl_id)
+    public function getEstateHtml($crawl_id)
     {
-        return file_get_contents('https://www.deutsche-wohnen.com/expose/object/'.$crawl_id);
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL, 'https://www.deutsche-wohnen.com/expose/object/'.$crawl_id);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        if ($this->proxyService) {
+            curl_setopt($ch, CURLOPT_PROXY, $this->proxyService->getProxyString());
+            curl_setopt($ch, CURLOPT_PROXYTYPE, $this->proxyService->getCurlProxyType());
+        }
+
+        $result = curl_exec($ch);
+
+        if (curl_error($ch) !== "") {
+            throw new Exception(curl_error($ch));
+        };
+
+        curl_close($ch);
+
+        return $result;
     }
 }

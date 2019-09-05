@@ -42,6 +42,7 @@ class Wohnraumkarte extends BaseWebsite
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         if ($this->proxyService) {
             curl_setopt($ch, CURLOPT_PROXY, $this->proxyService->getProxyString());
+            curl_setopt($ch, CURLOPT_PROXYTYPE, $this->proxyService->getCurlProxyType());
         }
 
         $result = curl_exec($ch);
