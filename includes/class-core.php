@@ -330,6 +330,8 @@ class Core {
 	 */
 	public static function on_deactivation(){
         wp_clear_scheduled_hook( Scheduler::HOOK);
+        wp_clear_scheduled_hook( Scheduler::HOOK_PROXY);
+        wp_clear_scheduled_hook( Scheduler::HOOK_ESTATE);
     }
 
 

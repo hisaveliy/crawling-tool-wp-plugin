@@ -15,12 +15,35 @@ class Scheduler
 
     const HOOK        = 'crawling_global_schedule';
     const HOOK_ESTATE = 'crawling_estates_schedule';
+    const HOOK_PROXY  = 'crawling_proxy_schedule';
+
+
+    const PIECES_SIZE = 15;
 
     function __construct()
     {
         add_filter('cron_schedules', __CLASS__.'::add_schedules');
         add_action(self::HOOK, __CLASS__.'::process_global_schedule');
-        add_action(self::HOOK_ESTATE, __CLASS__.'::process_estates_schedule');
+        add_action(self::HOOK_ESTATE, __CLASS__.'::process_estates_schedule', 10, 2);
+        add_action(self::HOOK_PROXY, __CLASS__.'::crawling_proxy_schedule');
+
+        add_action('init', function () {
+
+//            self::crawlWohnraumkarte();
+//            self::crawling_proxy_schedule();
+//            die();
+//
+
+            return;
+            self::process_estates_schedule([
+                (object)[
+                    'id'    => 295698,
+                    'price' => 463
+                ]
+            ], 'wohnraumkarte');
+
+            die();
+        });
     }
 
     /**
@@ -50,8 +73,11 @@ class Scheduler
 
     public static function addScheduleEvent()
     {
+        wp_clear_scheduled_hook(Scheduler::HOOK_PROXY);
+        wp_schedule_event(time(), 'proxy_time', Scheduler::HOOK_PROXY);
+
         wp_clear_scheduled_hook(Scheduler::HOOK);
-        wp_schedule_event(time(), 'crawling_time', Scheduler::HOOK);
+        wp_schedule_event(time() + 60 * 15, 'crawling_time', Scheduler::HOOK);
     }
 
     /**
@@ -71,38 +97,44 @@ class Scheduler
             'interval' => DAY_IN_SECONDS * $period
         ];
 
+        $schedules['proxy_time'] = [
+            'display'  => ProxyService::CACHE_TIME.' min',
+            'interval' => ProxyService::CACHE_TIME * 60
+        ];
+
         return $schedules;
     }
 
     public static function process_global_schedule()
     {
-        self::crawlDeutscheWohnen();
+//        self::crawlDeutscheWohnen();
         self::crawlWohnraumkarte();
     }
 
     /**
-     * @param $args
+     * @param $entities
+     * @param $prefix
      * @throws ReflectionException
      */
-    public static function process_estates_schedule($args)
+    public static function process_estates_schedule($entities, $prefix)
     {
-        if (! array_key_exists('entities', $args) || ! array_key_exists('prefix', $args)) {
-            return;
-        }
-
-        $crawl_site_name = CrawlHelper::getCrawlClass($args['prefix']);
+        $crawl_site_name = CrawlHelper::getCrawlClass($prefix);
 
         if (! $crawl_site_name || ! class_exists($crawl_site_name)) {
             return;
         }
 
-        foreach ($args['entities'] as $entity) {
+        foreach ($entities as $entity) {
             $proxy = CrawlHelper::getProxyService();
             $class = new ReflectionClass($crawl_site_name);
 
             /** @var BaseWebsite $crawl_site */
             $crawl_site = $class->newInstanceArgs([$proxy]);
-            $crawl_site->addEstate($entity);
+            $estate     = $crawl_site->addEstate($entity);
+
+            if ($estate === null) {
+                self::createSingleSchedule([$entity], $prefix);
+            }
 
             unset($crawl_site);
             unset($class);
@@ -137,7 +169,10 @@ class Scheduler
                 }
             }
 
-            self::createSingleSchedule($new_estates, DeutscheWohnen::PREFIX);
+            $pieces = array_chunk($new_estates, self::PIECES_SIZE);
+            foreach ($pieces as $piece) {
+                self::createSingleSchedule($piece, DeutscheWohnen::PREFIX);
+            }
         } catch (Exception $e) {
             error_log($e->getMessage(), null, $e->getTraceAsString(), $e->getFile());
         }
@@ -146,9 +181,8 @@ class Scheduler
     protected static function crawlWohnraumkarte()
     {
         try {
-            $proxy = CrawlHelper::getProxyService();
-            $site  = new WohnraumkartePaginator($proxy);
-            $list  = $site->getEstates();
+            $site = new WohnraumkartePaginator();
+            $list = $site->getEstates();
             $old   = CrawlHelper::getListToDrafting($list, Wohnraumkarte::PREFIX);
 
             $new_estates = [];
@@ -173,10 +207,29 @@ class Scheduler
                 }
             }
 
-            self::createSingleSchedule($new_estates, Wohnraumkarte::PREFIX);
+            $pieces = array_chunk($new_estates, self::PIECES_SIZE);
+            foreach ($pieces as $piece) {
+                self::createSingleSchedule($piece, Wohnraumkarte::PREFIX);
+            }
         } catch (Exception $e) {
             error_log($e->getMessage(), null, $e->getTraceAsString(), $e->getFile());
         }
+    }
+
+    public static function crawling_proxy_schedule()
+    {
+        $proxies = [];
+
+        for ($i = 0; $i < ProxyService::CACHE_TIME; $i++) {
+            $proxy = CrawlHelper::getProxyService(false);
+
+            $proxies[] = [
+                'proxy' => $proxy->getProxyString(),
+                'type'  => $proxy->getCurlProxyType()
+            ];
+        }
+
+        set_transient(ProxyService::PROXY_CACHE, $proxies, ProxyService::CACHE_TIME * 60 * 2);
     }
 
     /**

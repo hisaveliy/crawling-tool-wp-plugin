@@ -6,11 +6,11 @@ namespace Crawling_WP;
 
 use Exception;
 
-class ProxyService
+class ProxyService implements ProxyInterface
 {
 
-    const CACHE_PREFIX = 'crawling_ip_';
-    const CACHE_TIME   = 15;
+    const PROXY_CACHE = 'crawling_proxy';
+    const CACHE_TIME  = 10;
 
     /**
      * @var string
@@ -29,32 +29,67 @@ class ProxyService
      */
     public function __construct($key)
     {
-        $this->key = $key;
+        $this->key   = $key;
+        $this->proxy = $this->getProxy();
+    }
 
-        $proxy = $this->getProxy();
-
-        $check = 1;
+    /**
+     * @return object|null
+     */
+    public function getProxyFromApi()
+    {
+        $check = 0;
+        $proxy = $this->requestProxy();
 
         while (! self::checkProxy($proxy->ip, $proxy->port)) {
-            $proxy = $this->getProxy();
+            $proxy = $this->requestProxy();
 
             if ($check > 10) {
-                throw new Exception('Could not get HTTP Proxy');
+                return null;
             }
             $check++;
         }
 
-        $this->proxy = $proxy;
+        return $proxy;
     }
 
     /**
      * @return object
      */
-    protected function getProxy()
+    protected function requestProxy()
     {
         $response = @file_get_contents('https://api.getproxylist.com/proxy?'.$this->getParamsString());
 
         return $response ? json_decode($response) : (object)['ip' => false, 'port' => false];
+    }
+
+    /**
+     * @return object|null
+     */
+    protected function getProxy()
+    {
+//        $used = get_transient(PREFIX.self::CACHE_PREFIX);
+//
+//        if ($used) {
+//            if ($used->count <= self::RE_USAGE_COUNT) {
+//                $used->count++;
+//                set_transient(PREFIX.self::CACHE_PREFIX, $used, self::CACHE_TIME);
+//
+//                return $used->proxy;
+//            }
+//        }
+
+        $proxy = $this->getProxyFromApi();
+        if (! $proxy) {
+            return null;
+        }
+
+//        set_transient(PREFIX.self::CACHE_PREFIX, (object)[
+//            'count' => 1,
+//            'proxy' => $proxy
+//        ], self::CACHE_TIME);
+
+        return $proxy;
     }
 
     /**
@@ -68,14 +103,8 @@ class ProxyService
             return false;
         }
 
-        if (self::isUsedProxy($host)) {
-            return false;
-        }
-
-        $waitTimeoutInSeconds = 5;
-        if ($fp = @fsockopen($host, $port, $errCode, $errStr, $waitTimeoutInSeconds)) {
+        if ($fp = @fsockopen($host, $port, $errCode, $errStr, 5)) {
             fclose($fp);
-            self::addProxyToUsedList($host);
 
             return true;
         } else {
@@ -89,8 +118,11 @@ class ProxyService
     protected function getParamsString()
     {
         $params = [
-            'allowsHttps' => 1,
-            'protocol'    => 'http'
+            'lastTested'            => 600,
+            'allowsPost'            => 1,
+            'allowsHttps'           => 1,
+            'protocol'              => 'http',
+            'maxSecondsToFirstByte' => 5
         ];
 
         if ($this->key) {
@@ -124,26 +156,5 @@ class ProxyService
         }
 
         return constant('CURLPROXY_'.strtoupper($this->proxy->protocol));
-    }
-
-    /**
-     * Check is host at cache list
-     *
-     * @param string $host
-     * @return bool
-     */
-    public static function isUsedProxy($host)
-    {
-        return get_transient(self::CACHE_PREFIX.$host) !== false;
-    }
-
-    /**
-     * Add Proxy To Cache
-     *
-     * @param string $host
-     */
-    public static function addProxyToUsedList($host)
-    {
-        set_transient(self::CACHE_PREFIX.$host, true, self::CACHE_TIME);
     }
 }

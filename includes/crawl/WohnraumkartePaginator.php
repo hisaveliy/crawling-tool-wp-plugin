@@ -8,26 +8,12 @@ use Exception;
 
 class WohnraumkartePaginator
 {
-
     /**
-     * @var ProxyService
-     */
-    private $proxyService;
-
-    /**
-     * WohnraumkartePaginator constructor.
-     * @param ProxyService|null $proxyService
-     */
-    public function __construct(ProxyService $proxyService = null)
-    {
-        $this->proxyService = $proxyService;
-    }
-
-    /**
+     * @param $page
+     * @param ProxyInterface|null $proxyService
      * @return bool|string
-     * @throws Exception
      */
-    public function getHtml($page = 1)
+    public function getHtml($page, ProxyInterface $proxyService = null)
     {
         $ch = curl_init();
 
@@ -35,15 +21,16 @@ class WohnraumkartePaginator
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $this->getBody($page));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        if ($this->proxyService) {
-            curl_setopt($ch, CURLOPT_PROXY, $this->proxyService->getProxyString());
-            curl_setopt($ch, CURLOPT_PROXYTYPE, $this->proxyService->getCurlProxyType());
+        if ($proxyService) {
+            curl_setopt($ch, CURLOPT_PROXY, $proxyService->getProxyString());
+            curl_setopt($ch, CURLOPT_PROXYTYPE, $proxyService->getCurlProxyType());
         }
 
         $result = curl_exec($ch);
 
         if (curl_error($ch) !== "") {
-            throw new Exception(curl_error($ch));
+            error_log(curl_error($ch));
+            return false;
         };
         curl_close($ch);
 
@@ -51,22 +38,16 @@ class WohnraumkartePaginator
     }
 
     /**
-     * @param bool $max
      * @return array
      * @throws Exception
      */
-    public function getEstates($max = false)
+    public function getEstates()
     {
         $page    = 1;
         $estates = [];
 
         while (true) {
-            try {
-                $current = $this->getEstateFrom($this->getHtml($page));
-            } catch (Exception $e) {
-                error_log($e->getMessage(), null, $e->getTraceAsString(), $e->getFile());
-                $current = [];
-            }
+            $current = $this->getEstateFrom($this->getPage($page));
 
             if (empty($current)) {
                 break;
@@ -74,13 +55,24 @@ class WohnraumkartePaginator
 
             $estates = array_merge($estates, $current);
             $page++;
-
-            if ($max && count($estates) >= $max) {
-                break;
-            }
         }
 
         return $estates;
+    }
+
+    /**
+     * @param $page
+     * @return string
+     */
+    protected function getPage($page)
+    {
+        $result = false;
+
+        while (! $result) {
+            $result = $this->getHtml($page, CrawlHelper::getProxyService());
+        }
+
+        return $result;
     }
 
     /**
@@ -100,8 +92,8 @@ class WohnraumkartePaginator
 
         for ($i = 0; $i < count($ids); $i++) {
             $result[] = (object)[
-                'object_id' => $ids[$i],
-                'price'     => $prices[$i]
+                'id'    => $ids[$i],
+                'price' => $prices[$i]
             ];
         }
 
@@ -143,9 +135,10 @@ class WohnraumkartePaginator
     }
 
     /**
+     * @param $page
      * @return string
      */
-    protected function getBody($page = 1)
+    protected function getBody($page)
     {
         return http_build_query([
             'bounds'           => '((42.04537101657428, -4.614572859375016), (59.547095520406245, 25.509938859374984))',

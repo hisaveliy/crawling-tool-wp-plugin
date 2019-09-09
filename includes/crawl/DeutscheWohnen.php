@@ -17,9 +17,9 @@ class DeutscheWohnen extends BaseWebsite
 
     /**
      * DeutscheWohnen constructor.
-     * @param ProxyService $proxyService
+     * @param ProxyInterface $proxyService
      */
-    public function __construct(ProxyService $proxyService)
+    public function __construct(ProxyInterface $proxyService)
     {
         $this->proxyService = $proxyService;
     }
@@ -81,12 +81,23 @@ class DeutscheWohnen extends BaseWebsite
 
     /**
      * @param $estate
-     * @return Estate
-     * @throws Exception
+     * @return Estate|null|bool
      */
     public function addEstate($estate)
     {
-        $html = $this->getEstateHtml($estate->id);
+        try {
+            $html = $this->getEstateHtml($estate->id);
+        } catch (Exception $e) {
+            error_log($e->getMessage(), null, $e->getTraceAsString(), $e->getFile());
+
+            return null;
+        }
+
+        $id = CrawlHelper::isEstateExist($estate->id, self::PREFIX);
+
+        if ($id) {
+            return true;
+        }
 
         $address     = self::getEstateAddress($estate);
         $gallery     = self::getEstateGallery($estate->images);
@@ -96,7 +107,7 @@ class DeutscheWohnen extends BaseWebsite
         $details = self::getEstateDetails($html);
         $details->setArea($estate->area)->setRooms($estate->rooms);
 
-        $terms = self::getEstateTerms($estate);
+        $terms = self::getEstateTerms($html);
         $terms->add('iwp_status', strtolower($estate->commercializationType));
 
         $contacts = new ContactsEstate(true, false, false, true);
@@ -195,8 +206,14 @@ class DeutscheWohnen extends BaseWebsite
         $startDivTag = 'object-detail__description';
 
         $startDiv = strpos($html, $startDivTag);
-        $start    = strpos($html, '<p>', $startDiv) + 3;
-        $end      = strpos($html, '</p>', $start);
+        if (! $startDiv) {
+            return '';
+        }
+        $start = strpos($html, '<p>', $startDiv) + 3;
+        if ($start === 3) {
+            return '';
+        }
+        $end = strpos($html, '</p>', $start);
 
         return substr($html, $start, $end - $start);
     }
@@ -233,6 +250,9 @@ class DeutscheWohnen extends BaseWebsite
         $start_block = 'object-detail__equipment-icons">';
 
         $start = strpos($html, $start_block) + strlen($start_block);
+        if ($start === strlen($start_block)) {
+            return [];
+        }
 
         $end = strpos($html, '</ul>', $start);
 

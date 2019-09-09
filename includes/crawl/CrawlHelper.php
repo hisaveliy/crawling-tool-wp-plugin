@@ -44,7 +44,9 @@ class CrawlHelper
         $startTag = '<td>'.$name.'</td> <td>';
 
         $start = strpos($html, $startTag) + strlen($startTag);
-
+        if ($start === strlen($startTag)) {
+            return '';
+        }
         $end = strpos($html, '</td>', $start);
 
         return substr($html, $start, $end - $start);
@@ -115,6 +117,9 @@ class CrawlHelper
      */
     public static function getListToDrafting(array $estates, $class)
     {
+        if (empty($estates)) {
+            return [];
+        }
         global $wpdb;
 
         $ids = implode(', ', array_map(function ($estate) {
@@ -173,16 +178,22 @@ class CrawlHelper
     }
 
     /**
-     * @return ProxyService|null
+     * @return ProxyService|null|ProxyCacheService
      */
-    public static function getProxyService()
+    public static function getProxyService($cache = true)
     {
         $key = get_option(PREFIX.'_proxy_api_key') ?? false;
 
         try {
-            return new ProxyService($key);
+            if ($cache) {
+                return new ProxyCacheService();
+            } else {
+                return new ProxyService($key);
+            }
         } catch (Exception $e) {
             return null;
         }
     }
+
+
 }

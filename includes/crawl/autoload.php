@@ -20,7 +20,9 @@ $plugin_classes = [
     \Crawling_WP\Estate::class,
     \Crawling_WP\Wohnraumkarte::class,
     \Crawling_WP\WohnraumkartePaginator::class,
+    \Crawling_WP\ProxyInterface::class,
     \Crawling_WP\ProxyService::class,
+    \Crawling_WP\ProxyCacheService::class,
 ];
 
 

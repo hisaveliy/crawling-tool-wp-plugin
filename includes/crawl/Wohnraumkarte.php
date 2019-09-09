@@ -4,8 +4,6 @@
 namespace Crawling_WP;
 
 
-//include_once './autoload.php';
-
 use Exception;
 
 class Wohnraumkarte extends BaseWebsite
@@ -20,9 +18,9 @@ class Wohnraumkarte extends BaseWebsite
 
     /**
      * Wohnraumkarte constructor.
-     * @param ProxyService|null $proxy
+     * @param ProxyInterface|null $proxy
      */
-    public function __construct(ProxyService $proxy = null)
+    public function __construct(ProxyInterface $proxy = null)
     {
         $this->proxyService = $proxy;
     }
@@ -58,10 +56,10 @@ class Wohnraumkarte extends BaseWebsite
 
     public function updateEstates()
     {
-        $paginator = new WohnraumkartePaginator($this->proxyService);
+        $paginator = new WohnraumkartePaginator();
 
         try {
-            $list = $paginator->getEstates(25);
+            $list = $paginator->getEstates();
             $old  = CrawlHelper::getListToDrafting($list, self::PREFIX);
 
             if (! empty($old)) {
@@ -89,12 +87,21 @@ class Wohnraumkarte extends BaseWebsite
 
     /**
      * @param $estate
-     * @return Estate
-     * @throws Exception
+     * @return bool|Estate|null
      */
     public function addEstate($estate)
     {
-        $html = $this->getEstateHtml($estate->id);
+        if (CrawlHelper::isEstateExist($estate->id, self::PREFIX)) {
+            return true;
+        }
+
+        try {
+            $html = $this->getEstateHtml($estate->id);
+        } catch (Exception $e) {
+            error_log($e->getMessage(), null, $e->getTraceAsString(), $e->getFile());
+
+            return null;
+        }
 
         $address     = self::getEstateAddress($html);
         $images      = self::getImages($html);
