@@ -120,6 +120,11 @@ class Settings_Page
                 'type'  => 'text',
                 'label' => 'Proxy API KEY'
             ],
+            [
+                'id'    => self::get_id('api_url'),
+                'type'  => 'text',
+                'label' => 'Service API URL'
+            ],
         ];
     }
 

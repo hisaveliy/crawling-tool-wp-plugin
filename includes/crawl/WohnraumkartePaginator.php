@@ -8,6 +8,7 @@ use Exception;
 
 class WohnraumkartePaginator
 {
+
     /**
      * @param $page
      * @param ProxyInterface|null $proxyService
@@ -30,6 +31,7 @@ class WohnraumkartePaginator
 
         if (curl_error($ch) !== "") {
             error_log(curl_error($ch));
+
             return false;
         };
         curl_close($ch);
@@ -46,16 +48,16 @@ class WohnraumkartePaginator
         $page    = 1;
         $estates = [];
 
-        while (true) {
-            $current = $this->getEstateFrom($this->getPage($page));
-
-            if (empty($current)) {
-                break;
-            }
-
-            $estates = array_merge($estates, $current);
-            $page++;
-        }
+//        while (true) {
+        $current = $this->getEstateFrom($this->getPage($page));
+//
+//            if (empty($current)) {
+//                break;
+//            }
+//
+        $estates = array_merge($estates, $current);
+//            $page++;
+//        }
 
         return $estates;
     }

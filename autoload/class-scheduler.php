@@ -5,7 +5,6 @@ namespace Crawling_WP;
 
 use Exception;
 use ReflectionClass;
-use ReflectionException;
 
 defined('ABSPATH') || exit;
 
@@ -13,9 +12,7 @@ defined('ABSPATH') || exit;
 class Scheduler
 {
 
-    const HOOK        = 'crawling_global_schedule';
-    const HOOK_ESTATE = 'crawling_estates_schedule';
-    const HOOK_PROXY  = 'crawling_proxy_schedule';
+    const HOOK = 'crawling_global_schedule';
 
 
     const PIECES_SIZE = 15;
@@ -24,26 +21,6 @@ class Scheduler
     {
         add_filter('cron_schedules', __CLASS__.'::add_schedules');
         add_action(self::HOOK, __CLASS__.'::process_global_schedule');
-        add_action(self::HOOK_ESTATE, __CLASS__.'::process_estates_schedule', 10, 2);
-        add_action(self::HOOK_PROXY, __CLASS__.'::crawling_proxy_schedule');
-
-        add_action('init', function () {
-
-//            self::crawlWohnraumkarte();
-//            self::crawling_proxy_schedule();
-//            die();
-//
-
-            return;
-            self::process_estates_schedule([
-                (object)[
-                    'id'    => 295698,
-                    'price' => 463
-                ]
-            ], 'wohnraumkarte');
-
-            die();
-        });
     }
 
     /**
@@ -73,9 +50,6 @@ class Scheduler
 
     public static function addScheduleEvent()
     {
-        wp_clear_scheduled_hook(Scheduler::HOOK_PROXY);
-        wp_schedule_event(time(), 'proxy_time', Scheduler::HOOK_PROXY);
-
         wp_clear_scheduled_hook(Scheduler::HOOK);
         wp_schedule_event(time() + 60 * 15, 'crawling_time', Scheduler::HOOK);
     }
@@ -97,151 +71,66 @@ class Scheduler
             'interval' => DAY_IN_SECONDS * $period
         ];
 
-        $schedules['proxy_time'] = [
-            'display'  => ProxyService::CACHE_TIME.' min',
-            'interval' => ProxyService::CACHE_TIME * 60
-        ];
-
         return $schedules;
+    }
+
+    /**
+     * @return array
+     */
+    protected static function getDataFromApi()
+    {
+        $url = get_option(PREFIX.'_api_url').'/estates';
+
+        try {
+            $data = file_get_contents($url);
+
+            return json_decode($data);
+        } catch (Exception $e) {
+            return [];
+        }
     }
 
     public static function process_global_schedule()
     {
-//        self::crawlDeutscheWohnen();
-        self::crawlWohnraumkarte();
-    }
+        $entities = self::getDataFromApi();
 
-    /**
-     * @param $entities
-     * @param $prefix
-     * @throws ReflectionException
-     */
-    public static function process_estates_schedule($entities, $prefix)
-    {
-        $crawl_site_name = CrawlHelper::getCrawlClass($prefix);
+        foreach ($entities as $estate) {
+            $id = CrawlHelper::isEstateExist($estate->crawl_id, $estate->crawl_class);
 
-        if (! $crawl_site_name || ! class_exists($crawl_site_name)) {
-            return;
-        }
+            if (!$id) {
+                $id = wp_insert_post([
+                    'post_title'   => $estate->title,
+                    'post_content' => $estate->description,
+                    'post_author'  => 1,
+                    'post_type'    => 'iwp_property'
+                ]);
 
-        foreach ($entities as $entity) {
-            $proxy = CrawlHelper::getProxyService();
-            $class = new ReflectionClass($crawl_site_name);
+                $eTerm = new TermEstate();
 
-            /** @var BaseWebsite $crawl_site */
-            $crawl_site = $class->newInstanceArgs([$proxy]);
-            $estate     = $crawl_site->addEstate($entity);
-
-            if ($estate === null) {
-                self::createSingleSchedule([$entity], $prefix);
-            }
-
-            unset($crawl_site);
-            unset($class);
-        }
-    }
-
-    protected static function crawlDeutscheWohnen()
-    {
-        try {
-            $proxy       = CrawlHelper::getProxyService();
-            $site        = new DeutscheWohnen($proxy);
-            $list        = json_decode($site->getHtml());
-            $new_estates = [];
-
-            $old = CrawlHelper::getListToDrafting($list, DeutscheWohnen::PREFIX);
-
-            if (! empty($old)) {
-                CrawlHelper::draftList($old);
-            }
-
-            foreach ($list as $estate) {
-                $id = CrawlHelper::isEstateExist($estate->id, DeutscheWohnen::PREFIX);
-
-                if ($id) {
-                    if (RentEstate::getTotalRent($id) !== $estate->price) {
-                        $html = $site->getEstateHtml($estate->id);
-                        DeutscheWohnen::getEstateRent($html)->save($id);
-                    }
-                    continue;
-                } else {
-                    $new_estates[] = $estate;
+                foreach ($estate->term as $term) {
+                    $eTerm->add($term->taxonomy, unserialize($term->term));
                 }
-            }
+                $eTerm->save($id);
 
-            $pieces = array_chunk($new_estates, self::PIECES_SIZE);
-            foreach ($pieces as $piece) {
-                self::createSingleSchedule($piece, DeutscheWohnen::PREFIX);
-            }
-        } catch (Exception $e) {
-            error_log($e->getMessage(), null, $e->getTraceAsString(), $e->getFile());
-        }
-    }
+                $gallery = new GalleryEstate();
 
-    protected static function crawlWohnraumkarte()
-    {
-        try {
-            $site = new WohnraumkartePaginator();
-            $list = $site->getEstates();
-            $old   = CrawlHelper::getListToDrafting($list, Wohnraumkarte::PREFIX);
-
-            $new_estates = [];
-
-            if (! empty($old)) {
-                CrawlHelper::draftList($old);
-            }
-
-            foreach ($list as $estate) {
-                $id = CrawlHelper::isEstateExist($estate->id, Wohnraumkarte::PREFIX);
-
-                if ($id) {
-                    if (intval(Wohnraumkarte::toInt(RentEstate::getMonthlyPrice($id))) !== intval($estate->price)) {
-                        $site = new Wohnraumkarte(CrawlHelper::getProxyService());
-                        $html = $site->getEstateHtml($estate->id);
-                        Wohnraumkarte::getEstateRent($html)->save($id);
+                if ($estate->attachment && !empty($estate->attachment)) {
+                    foreach ($estate->attachment as $img) {
+                        $gallery->addImage($img->url, $img->title, $img->description);
                     }
-
-                    continue;
-                } else {
-                    $new_estates[] = $estate;
                 }
+
+                $gallery->save($id);
             }
 
-            $pieces = array_chunk($new_estates, self::PIECES_SIZE);
-            foreach ($pieces as $piece) {
-                self::createSingleSchedule($piece, Wohnraumkarte::PREFIX);
+            foreach ($estate->meta as $meta) {
+                update_post_meta($id, $meta->meta_key, $meta->meta_value);
             }
-        } catch (Exception $e) {
-            error_log($e->getMessage(), null, $e->getTraceAsString(), $e->getFile());
-        }
-    }
 
-    public static function crawling_proxy_schedule()
-    {
-        $proxies = [];
-
-        for ($i = 0; $i < ProxyService::CACHE_TIME; $i++) {
-            $proxy = CrawlHelper::getProxyService(false);
-
-            $proxies[] = [
-                'proxy' => $proxy->getProxyString(),
-                'type'  => $proxy->getCurlProxyType()
-            ];
-        }
-
-        set_transient(ProxyService::PROXY_CACHE, $proxies, ProxyService::CACHE_TIME * 60 * 2);
-    }
-
-    /**
-     * @param $entities
-     * @param $prefix
-     */
-    protected static function createSingleSchedule($entities, $prefix)
-    {
-        $delay = rand(60, 200);
-
-        while (wp_schedule_single_event(time() + $delay, self::HOOK_ESTATE, compact('entities', 'prefix')) === false) {
-            $delay += $delay;
+            wp_update_post([
+                'ID' => $id,
+                'status' => $estate->status
+            ]);
         }
     }
 }
