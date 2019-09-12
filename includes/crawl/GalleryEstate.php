@@ -10,13 +10,16 @@ class GalleryEstate
     /**
      * @var array
      */
-    private $images;
+    private $images = [];
 
     /**
      * @param $post_id
      */
     public function save($post_id)
     {
+        if (!is_array($this->images) || empty($this->images)) {
+            return;
+        }
         foreach ($this->images as $image) {
             $attachment = get_page_by_title($image['title'], OBJECT, 'attachment');
 

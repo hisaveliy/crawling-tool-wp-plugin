@@ -97,7 +97,7 @@ class Scheduler
         foreach ($entities as $estate) {
             $id = CrawlHelper::isEstateExist($estate->crawl_id, $estate->crawl_class);
 
-            if (!$id) {
+            if (! $id) {
                 $id = wp_insert_post([
                     'post_title'   => $estate->title,
                     'post_content' => $estate->description,
@@ -105,16 +105,9 @@ class Scheduler
                     'post_type'    => 'iwp_property'
                 ]);
 
-                $eTerm = new TermEstate();
-
-                foreach ($estate->term as $term) {
-                    $eTerm->add($term->taxonomy, unserialize($term->term));
-                }
-                $eTerm->save($id);
-
                 $gallery = new GalleryEstate();
 
-                if ($estate->attachment && !empty($estate->attachment)) {
+                if ($estate->attachment && ! empty($estate->attachment)) {
                     foreach ($estate->attachment as $img) {
                         $gallery->addImage($img->url, $img->title, $img->description);
                     }
@@ -123,13 +116,22 @@ class Scheduler
                 $gallery->save($id);
             }
 
+            $eTerm = new TermEstate();
+
+            foreach ($estate->term as $term) {
+                $eTerm->add($term->taxonomy, unserialize($term->term));
+            }
+            $eTerm->save($id);
+
             foreach ($estate->meta as $meta) {
                 update_post_meta($id, $meta->meta_key, $meta->meta_value);
             }
 
             wp_update_post([
-                'ID' => $id,
-                'status' => $estate->status
+                'ID'           => $id,
+                'post_title'   => $estate->title,
+                'post_content' => $estate->description,
+                'status'       => $estate->status
             ]);
         }
     }
