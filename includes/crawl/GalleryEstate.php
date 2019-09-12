@@ -4,6 +4,8 @@
 namespace Crawling_WP;
 
 
+use WP_Error;
+
 class GalleryEstate
 {
 
@@ -17,15 +19,12 @@ class GalleryEstate
      */
     public function save($post_id)
     {
-        if (!is_array($this->images) || empty($this->images)) {
-            return;
-        }
         foreach ($this->images as $image) {
-            $attachment = get_page_by_title($image['title'], OBJECT, 'attachment');
-
-            if ($attachment) {
-                continue;
-            }
+//            $attachment = get_page_by_title($image['title'], OBJECT, 'attachment');
+//
+//            if ($attachment) {
+//                continue;
+//            }
 
             $filename = wp_upload_dir()['path'].'/'.uniqid().'.'.pathinfo($image['url'])['extension'];
             $result   = file_put_contents($filename, file_get_contents($image['url']));
@@ -48,7 +47,7 @@ class GalleryEstate
 
             $attach_id = wp_insert_attachment($attachment, $filename, 0);
 
-            if ($attach_id instanceof \WP_Error) {
+            if ($attach_id instanceof WP_Error) {
                 continue;
             }
 
