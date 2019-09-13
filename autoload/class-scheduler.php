@@ -3,8 +3,7 @@
 namespace Crawling_WP;
 
 
-use Exception;
-use ReflectionClass;
+use IWP_Property;
 
 defined('ABSPATH') || exit;
 
@@ -21,6 +20,13 @@ class Scheduler
     {
         add_filter('cron_schedules', __CLASS__.'::add_schedules');
         add_action(self::HOOK, __CLASS__.'::process_global_schedule');
+
+        add_action('init', function () {
+            return;
+            $post = get_post();;
+
+            IWP_Property::get_property($post);
+        });
     }
 
     /**
@@ -74,25 +80,9 @@ class Scheduler
         return $schedules;
     }
 
-    /**
-     * @return array
-     */
-    protected static function getDataFromApi()
-    {
-        $url = get_option(PREFIX.'_api_url').'/estates';
-
-        try {
-            $data = file_get_contents($url);
-
-            return json_decode($data);
-        } catch (Exception $e) {
-            return [];
-        }
-    }
-
     public static function process_global_schedule()
     {
-        $entities = self::getDataFromApi();
+        $entities = CrawlService::getDataFromApi();
 
         foreach ($entities as $estate) {
             $id = CrawlHelper::isEstateExist($estate->crawl_id, $estate->crawl_class);

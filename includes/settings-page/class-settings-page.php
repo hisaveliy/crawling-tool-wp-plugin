@@ -104,27 +104,27 @@ class Settings_Page
 //                'label' => 'Scheduler Settings',
 //                'type'  => 'headline-3',
 //            ],
-            //            [
-            //                'id'    => self::get_id('headline'),
-            //                'type'  => 'text',
-            //                'label' => 'Headline'
-            //            ],
-            [
-                'id'    => self::get_id('scheduler_period'),
-                'type'  => 'number',
-                'label' => 'Sync interval (in days)',
-                'std'   => '4'
-            ],
-            [
-                'id'    => self::get_id('proxy_api_key'),
-                'type'  => 'text',
-                'label' => 'Proxy API KEY'
-            ],
-            [
-                'id'    => self::get_id('api_url'),
-                'type'  => 'text',
-                'label' => 'Service API URL'
-            ],
+//            [
+//                'id'    => self::get_id('headline'),
+//                'type'  => 'text',
+//                'label' => 'Headline'
+//            ],
+[
+    'id'    => self::get_id('scheduler_period'),
+    'type'  => 'number',
+    'label' => 'Sync interval (in days)',
+    'std'   => '4'
+],
+[
+    'id'    => self::get_id('proxy_api_key'),
+    'type'  => 'text',
+    'label' => 'Proxy API KEY'
+],
+[
+    'id'    => self::get_id('api_url'),
+    'type'  => 'text',
+    'label' => 'Service API URL'
+],
         ];
     }
 
@@ -278,6 +278,13 @@ class Settings_Page
     {
 
         if (array_key_exists('saved', $_REQUEST) && $_REQUEST['saved']) {
+
+            foreach (CrawlService::getOptions() as $option) {
+                if (array_key_exists(PREFIX.'_'.$option, $_REQUEST)) {
+                    CrawlService::updateOption($option, $_REQUEST[PREFIX.'_'.$option]);
+                }
+            }
+
             ?>
 
             <div id="message" class="updated fade">
