@@ -30,7 +30,7 @@ class TermEstate
         foreach ($term_data as $value) {
             $term = get_term_by('name', $value, $taxonomy, ARRAY_A);
             if (! $term) {
-                $term = wp_create_term($value, $taxonomy);
+                $term = wp_insert_term($value, $taxonomy);
             }
 
             $terms[] = $term['term_id'];

@@ -4,10 +4,27 @@
 namespace Crawling_WP;
 
 
+use Exception;
 use WP_Error;
 
 class GalleryEstate
 {
+
+    /**
+     * @var ProxyInterface
+     */
+    private $proxy;
+
+    /**
+     * GalleryEstate constructor.
+     * @param ProxyInterface|null $proxy
+     */
+    public function __construct(ProxyInterface $proxy = null)
+    {
+        if ($proxy) {
+            $this->proxy = $proxy;
+        }
+    }
 
     /**
      * @var array
@@ -20,14 +37,8 @@ class GalleryEstate
     public function save($post_id)
     {
         foreach ($this->images as $image) {
-//            $attachment = get_page_by_title($image['title'], OBJECT, 'attachment');
-//
-//            if ($attachment) {
-//                continue;
-//            }
-
             $filename = wp_upload_dir()['path'].'/'.uniqid().'.'.pathinfo($image['url'])['extension'];
-            $result   = file_put_contents($filename, file_get_contents($image['url']));
+            $result   = file_put_contents($filename, $this->getImage($image['url']));
 
             if (! $result) {
                 continue;
@@ -70,5 +81,34 @@ class GalleryEstate
     public function addImage($url, $title, $description)
     {
         $this->images[] = compact('url', 'title', 'description');
+    }
+
+    /**
+     * @param $url
+     * @return string
+     */
+    public function getImage($url)
+    {
+        $img = null;
+
+        while ($img === null) {
+            try {
+                $img = CrawlHelper::sendGetRequest($url, $this->proxy);
+            } catch (Exception $e) {
+                $img = null;
+            }
+        }
+
+        return $img;
+    }
+
+    public static function isImageUpdated($post_id, $images = [])
+    {
+        $attachments = $attachments = get_post_meta($post_id, '_crawling_attachments', true);;
+        if (! $attachments) {
+            $attachments = [];
+        }
+
+        return crc32(json_encode($attachments)) !== crc32(json_encode($images));
     }
 }

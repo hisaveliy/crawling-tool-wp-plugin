@@ -3,15 +3,14 @@
 namespace Crawling_WP;
 
 
-use IWP_Property;
-
 defined('ABSPATH') || exit;
 
 
 class Scheduler
 {
 
-    const HOOK = 'crawling_global_schedule';
+    const HOOK        = 'crawling_global_schedule';
+    const HOOK_IMAGES = 'crawling_image_schedule';
 
 
     const PIECES_SIZE = 15;
@@ -20,13 +19,7 @@ class Scheduler
     {
         add_filter('cron_schedules', __CLASS__.'::add_schedules');
         add_action(self::HOOK, __CLASS__.'::process_global_schedule');
-
-        add_action('init', function () {
-            return;
-            $post = get_post();;
-
-            IWP_Property::get_property($post);
-        });
+        add_action(self::HOOK_IMAGES, __CLASS__.'::process_images_schedule');
     }
 
     /**
@@ -85,26 +78,26 @@ class Scheduler
         $entities = CrawlService::getDataFromApi();
 
         foreach ($entities as $estate) {
-            $id = CrawlHelper::isEstateExist($estate->crawl_id, $estate->crawl_class);
+            $id  = CrawlHelper::isEstateExist($estate->crawl_id, $estate->crawl_class);
+            $new = false;
 
             if (! $id) {
+                $new = true;
+
                 $id = wp_insert_post([
                     'post_title'   => $estate->title,
                     'post_content' => $estate->description,
                     'post_author'  => 1,
-                    'post_type'    => 'iwp_property'
+                    'post_type'    => 'iwp_property',
                 ]);
-
-                $gallery = new GalleryEstate();
-
-                if ($estate->attachment && ! empty($estate->attachment)) {
-                    foreach ($estate->attachment as $img) {
-                        $gallery->addImage($img->url, $img->title, $img->description);
-                    }
-                }
-
-                $gallery->save($id);
             }
+
+            if (GalleryEstate::isImageUpdated($id, $estate->attachment)) {
+                update_post_meta($id, '_crawling_attachments', $estate->attachment);
+
+                self::createSingleSchedule($id, self::HOOK_IMAGES);
+            }
+
 
             $eTerm = new TermEstate();
 
@@ -121,8 +114,49 @@ class Scheduler
                 'ID'           => $id,
                 'post_title'   => $estate->title,
                 'post_content' => $estate->description,
-                'status'       => $estate->status
+                'post_status'  => $new ? 'pending' : $estate->status
             ]);
+        }
+    }
+
+    /**
+     * @param $post_id
+     */
+    public static function process_images_schedule($post_id)
+    {
+        $attachments = get_post_meta($post_id, '_crawling_attachments', true);
+
+        if (! $attachments) {
+            return;
+        }
+
+        $gallery = new GalleryEstate(CrawlHelper::getProxyService(false));
+
+        if ($attachments) {
+            foreach ($attachments as $img) {
+                $gallery->addImage($img->url, $img->title, $img->description);
+            }
+        }
+
+        $gallery->save($post_id);
+
+        wp_update_post([
+            'ID'          => $post_id,
+            'post_status' => 'publish'
+        ]);
+    }
+
+
+    /**
+     * @param $post_id
+     * @param $hook
+     */
+    protected static function createSingleSchedule($post_id, $hook)
+    {
+        $delay = rand(10, 60);
+
+        while (wp_schedule_single_event(time() + $delay, $hook, compact('post_id')) === false) {
+            $delay += $delay;
         }
     }
 }

@@ -195,5 +195,31 @@ class CrawlHelper
         }
     }
 
+    /**
+     * @param $url
+     * @param ProxyInterface|null $proxy
+     * @return bool|string
+     * @throws Exception
+     */
+    public static function sendGetRequest($url, ProxyInterface $proxy = null)
+    {
+        $ch = curl_init();
 
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        if ($proxy) {
+            curl_setopt($ch, CURLOPT_PROXY, $proxy->getProxyString());
+            curl_setopt($ch, CURLOPT_PROXYTYPE, $proxy->getCurlProxyType());
+        }
+
+        $result = curl_exec($ch);
+
+        if (curl_error($ch) !== "") {
+            throw new Exception(curl_error($ch));
+        };
+
+        curl_close($ch);
+
+        return $result;
+    }
 }
