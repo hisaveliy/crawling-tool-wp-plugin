@@ -20,6 +20,8 @@ class Scheduler
         add_filter('cron_schedules', __CLASS__.'::add_schedules');
         add_action(self::HOOK, __CLASS__.'::process_global_schedule');
         add_action(self::HOOK_IMAGES, __CLASS__.'::process_images_schedule');
+
+        add_action('before_delete_post', __CLASS__.'::remove_gallery', 999);
     }
 
     /**
@@ -90,6 +92,9 @@ class Scheduler
                     'post_author'  => 1,
                     'post_type'    => 'iwp_property',
                 ]);
+
+                update_post_meta($id, '_crawl_id', $estate->crawl_id);
+                update_post_meta($id, '_crawl_class', $estate->crawl_class);
             }
 
             if (GalleryEstate::isImageUpdated($id, $estate->attachment)) {
@@ -124,6 +129,10 @@ class Scheduler
      */
     public static function process_images_schedule($post_id)
     {
+        if (get_post_status($post_id) === false) {
+            return;
+        }
+
         $attachments = get_post_meta($post_id, '_crawling_attachments', true);
 
         if (! $attachments) {
@@ -158,5 +167,24 @@ class Scheduler
         while (wp_schedule_single_event(time() + $delay, $hook, compact('post_id')) === false) {
             $delay += $delay;
         }
+    }
+
+    public static function remove_gallery($post_id)
+    {
+        global $post_type;
+
+        if ($post_type !== 'iwp_property') {
+            return;
+        }
+
+        $thumbnail   = get_post_meta($post_id, '_thumbnail_id');
+        $cover_image = get_post_meta($post_id, '_iwp_cover_image');
+        $gallery     = get_post_meta($post_id, '_thumbnail_id');
+
+        foreach (array_merge($thumbnail, $cover_image, $gallery) as $img) {
+            wp_delete_attachment($img, true);
+        }
+
+        return;
     }
 }

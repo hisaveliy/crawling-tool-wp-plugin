@@ -28,9 +28,12 @@ class TermEstate
         }
 
         foreach ($term_data as $value) {
-            $term = get_term_by('name', $value, $taxonomy, ARRAY_A);
+            $term = get_term_by('slug', sanitize_title($value), $taxonomy, ARRAY_A);
             if (! $term) {
-                $term = wp_insert_term($value, $taxonomy);
+                $term = wp_create_term($value, $taxonomy);
+            }
+            if ($term instanceof \WP_Error) {
+                continue;
             }
 
             $terms[] = $term['term_id'];
