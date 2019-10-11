@@ -43,7 +43,7 @@ define(__NAMESPACE__ . '\PLUGIN_BASENAME', plugin_basename(PLUGIN_DIR) . '/boots
 
 define(__NAMESPACE__ . '\PLUGIN_FOLDER', plugin_basename(PLUGIN_DIR));
 
-define(__NAMESPACE__ . '\PLUGIN_INSTANCE', sanitize_title(crypt($_SERVER['SERVER_NAME'], $salt = PLUGIN_FOLDER)));
+define(__NAMESPACE__ . '\PLUGIN_INSTANCE', sanitize_title(crypt($_SERVER['SERVER_NAME'] ?? 'localhost', $salt = PLUGIN_FOLDER)));
 
 // @todo resolve url
 define(__NAMESPACE__ . '\PLUGIN_SETTINGS_URL', admin_url('options-general.php?page='.PREFIX.'-settings'));

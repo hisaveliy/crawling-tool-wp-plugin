@@ -59,8 +59,9 @@ class Core {
 		self::includes();
 
 		//enqueue css and js files
-		Assets::enqueue();
+//		Assets::enqueue();
 
+        PostTypes::instance();
 
 		Scheduler::instance();
 

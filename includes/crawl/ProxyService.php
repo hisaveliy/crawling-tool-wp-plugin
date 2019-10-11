@@ -45,6 +45,7 @@ class ProxyService implements ProxyInterface
             $proxy = $this->requestProxy();
 
             if ($check > 10) {
+                var_dump('couldnt get proxy');
                 return null;
             }
             $check++;

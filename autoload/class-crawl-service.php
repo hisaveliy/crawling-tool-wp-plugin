@@ -56,7 +56,8 @@ class CrawlService
     public static function getOptions()
     {
         return [
-            'proxy_api_key'
+            'proxy_api_key',
+            'gmap_api_key'
         ];
     }
 }

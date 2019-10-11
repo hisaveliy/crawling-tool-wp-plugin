@@ -91,17 +91,20 @@ class Scheduler
                     'post_content' => $estate->description,
                     'post_author'  => 1,
                     'post_type'    => 'iwp_property',
+                    'post_status'  => 'pending'
                 ]);
 
                 update_post_meta($id, '_crawl_id', $estate->crawl_id);
                 update_post_meta($id, '_crawl_class', $estate->crawl_class);
-            }
+                update_post_meta($id, '_iwp_featured', true);
 
-            if (GalleryEstate::isImageUpdated($id, $estate->attachment)) {
-                update_post_meta($id, '_crawling_attachments', $estate->attachment);
-
-                self::createSingleSchedule($id, self::HOOK_IMAGES);
             }
+            update_post_meta($id, '_iwp_property_id', $id);
+            
+//            if (GalleryEstate::isImageUpdated($id, $estate->attachment) || $new) {
+            update_post_meta($id, '_crawling_attachments', $estate->attachment);
+            self::createSingleSchedule($id, self::HOOK_IMAGES);
+//            }
 
 
             $eTerm = new TermEstate();
@@ -130,16 +133,20 @@ class Scheduler
     public static function process_images_schedule($post_id)
     {
         if (get_post_status($post_id) === false) {
+            var_dump($post_id.'post_not found');
+
             return;
         }
 
         $attachments = get_post_meta($post_id, '_crawling_attachments', true);
 
         if (! $attachments) {
+            var_dump($post_id.'no attachments');
+
             return;
         }
 
-        $gallery = new GalleryEstate(CrawlHelper::getProxyService(false));
+        $gallery = new GalleryEstate();
 
         if ($attachments) {
             foreach ($attachments as $img) {
