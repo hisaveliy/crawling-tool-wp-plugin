@@ -218,6 +218,12 @@ class CrawlHelper
             throw new Exception(curl_error($ch));
         };
 
+        $info = curl_getinfo($ch);
+
+        if (array_key_exists('http_code', $info) && $info['http_code'] === 404) {
+            return false;
+        }
+
         curl_close($ch);
 
         return $result;

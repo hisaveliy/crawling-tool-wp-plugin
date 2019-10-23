@@ -28,6 +28,11 @@ class GalleryEstate
 
             $file = $this->getImage($image['url']);
 
+            if ($file === false) {
+                wp_delete_post($post_id);
+                break;
+            }
+
             if ($file === null) {
                 var_dump($post_id.'cant download');
 
@@ -142,7 +147,7 @@ class GalleryEstate
 
         $result = $wpdb->get_results("SELECT * FROM `{$wpdb->prefix}posts` WHERE post_type = 'attachment' AND guid  LIKE '%{$filename}%'");
 
-        return !empty($result);
+        return ! empty($result);
     }
 
     /**

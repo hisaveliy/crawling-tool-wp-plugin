@@ -100,12 +100,13 @@ class Scheduler
 
             }
             update_post_meta($id, '_iwp_property_id', $id);
-            
-//            if (GalleryEstate::isImageUpdated($id, $estate->attachment) || $new) {
-            update_post_meta($id, '_crawling_attachments', $estate->attachment);
-            self::createSingleSchedule($id, self::HOOK_IMAGES);
-//            }
 
+            //            if (GalleryEstate::isImageUpdated($id, $estate->attachment) || $new) {
+            update_post_meta($id, '_crawling_attachments', $estate->attachment);
+//            }
+            if (! empty($estate->attachment)) {
+                self::createSingleSchedule($id, self::HOOK_IMAGES);
+            }
 
             $eTerm = new TermEstate();
 

@@ -3,6 +3,7 @@
 
 namespace Crawling_WP;
 
+include_once ABSPATH.'/wp-admin/includes/taxonomy.php';
 
 class TermEstate
 {
