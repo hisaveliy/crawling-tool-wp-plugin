@@ -79,6 +79,8 @@ class Scheduler
     {
         $entities = CrawlService::getDataFromApi();
 
+        self::draftOldEstates($entities);
+
         foreach ($entities as $estate) {
             $id  = CrawlHelper::isEstateExist($estate->crawl_id, $estate->crawl_class);
             $new = false;
@@ -104,6 +106,7 @@ class Scheduler
             //            if (GalleryEstate::isImageUpdated($id, $estate->attachment) || $new) {
             update_post_meta($id, '_crawling_attachments', $estate->attachment);
 //            }
+
             if (! empty($estate->attachment)) {
                 self::createSingleSchedule($id, self::HOOK_IMAGES);
             }
@@ -126,6 +129,51 @@ class Scheduler
                 'post_status'  => $new ? 'pending' : $estate->status
             ]);
         }
+    }
+
+    /**
+     * @param array $list
+     */
+    public static function draftOldEstates($list)
+    {
+        $old = self::getListToDrafting($list);
+
+        global $wpdb;
+
+        $list = implode(', ', array_map(function ($item) {
+            return "'{$item->post_id}'";
+        }, $old));
+
+        $wpdb->query("UPDATE `{$wpdb->prefix}posts` SET post_status='trash' WHERE ID IN ({$list})");
+    }
+
+    /**
+     * @param array $list
+     * @param string $class
+     * @return array
+     */
+    public static function getListToDrafting($list, $class = false)
+    {
+        $list = implode(', ', array_map(function ($item) {
+            return "'{$item->crawl_id}'";
+        }, $list));
+
+        global $wpdb;
+
+        if ($class) {
+            $result = $wpdb->get_results("SELECT id.post_id FROM `{$wpdb->prefix}postmeta` AS class
+            INNER JOIN `{$wpdb->prefix}postmeta` AS id ON id.post_id = class.post_id
+             WHERE class.meta_key = '_crawl_class' AND class.meta_value = '{$class}'
+             AND id.meta_key = '_crawl_id' AND id.meta_value NOT IN ({$list})");
+        } else {
+            $result = $wpdb->get_results("SELECT id.post_id FROM `{$wpdb->prefix}postmeta` AS class
+            INNER JOIN `{$wpdb->prefix}postmeta` AS id ON id.post_id = class.post_id
+             WHERE class.meta_key = '_crawl_class'
+             AND id.meta_key = '_crawl_id' AND id.meta_value NOT IN ({$list})");
+        }
+
+
+        return $result;
     }
 
     /**
