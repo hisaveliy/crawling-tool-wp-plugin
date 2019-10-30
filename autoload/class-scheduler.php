@@ -79,7 +79,7 @@ class Scheduler
     {
         $entities = CrawlService::getDataFromApi();
 
-        self::draftOldEstates($entities);
+        self::removeOldEstates($entities);
 
         foreach ($entities as $estate) {
             $id  = CrawlHelper::isEstateExist($estate->crawl_id, $estate->crawl_class);
@@ -134,17 +134,21 @@ class Scheduler
     /**
      * @param array $list
      */
-    public static function draftOldEstates($list)
+    public static function removeOldEstates($list)
     {
         $old = self::getListToDrafting($list);
 
-        global $wpdb;
+//        global $wpdb;
+//
+//        $list = implode(', ', array_map(function ($item) {
+//            return "'{$item->post_id}'";
+//        }, $old));
 
-        $list = implode(', ', array_map(function ($item) {
-            return "'{$item->post_id}'";
-        }, $old));
+        foreach ($old as $item) {
+            wp_delete_post($item->post_id, true);
+        }
 
-        $wpdb->query("UPDATE `{$wpdb->prefix}posts` SET post_status='trash' WHERE ID IN ({$list})");
+//        $wpdb->query("UPDATE `{$wpdb->prefix}posts` SET post_status='trash' WHERE ID IN ({$list})");
     }
 
     /**
