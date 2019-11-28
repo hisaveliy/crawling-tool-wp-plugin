@@ -104,7 +104,10 @@ class Settings_Page
                 'id'    => self::get_id('scheduler_period'),
                 'type'  => 'number',
                 'label' => 'Sync interval (in days)',
-                'std'   => '4'
+                'std'   => '4',
+                'attrs' => [
+                    'step' => '0.1'
+                ]
             ],
             [
                 'id'    => self::get_id('proxy_api_key'),
@@ -135,6 +138,14 @@ class Settings_Page
         ob_start();
 
         foreach ($options as $value) :
+
+            if (array_key_exists('attrs', $value)) {
+                $attrs = implode(' ', array_map(function ($key) use ($value) {
+                    return sprintf('%s="%s"', $key, $value['attrs'][$key]);
+                }, $value['attrs']));
+
+                $value['attrs'] = $attrs;
+            }
 
             switch ($value['type']) :
                 case 'headline-3':

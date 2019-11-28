@@ -17,6 +17,7 @@ if (isset($value['id'])) :
 		'label' => '',
 		'placeholder' => '',
 		'value' => get_option($value['id']) === false ? $value['std'] : get_option($value['id']),
+        'attrs' => ''
 	], $value);
 	?>
 
@@ -30,7 +31,8 @@ if (isset($value['id'])) :
       id="<?php echo $value['id']; ?>"
       name="<?php echo $value['id']; ?>"
       placeholder="<?php echo $value['placeholder']; ?>"
-      value="<?php echo $value['value']; ?>" />
+      value="<?php echo $value['value']; ?>"
+      <?php echo $value['attrs']?>/>
   </label>
 
 <?php
