@@ -18,6 +18,7 @@ class Scheduler
     function __construct()
     {
         add_filter('cron_schedules', __CLASS__.'::add_schedules');
+
         add_action(self::HOOK, __CLASS__.'::process_global_schedule');
         add_action(self::HOOK_IMAGES, __CLASS__.'::process_images_schedule');
 
@@ -69,7 +70,7 @@ class Scheduler
 
         $schedules['crawling_time'] = [
             'display'  => $period.' day(days)',
-            'interval' => DAY_IN_SECONDS * $period
+            'interval' => DAY_IN_SECONDS * doubleval($period)
         ];
 
         return $schedules;
@@ -84,6 +85,10 @@ class Scheduler
         foreach ($entities as $estate) {
             $id  = CrawlHelper::isEstateExist($estate->crawl_id, $estate->crawl_class);
             $new = false;
+
+            if ($id && get_post_meta($id, '_crawl_desync', true) === 'on') {
+                continue;
+            }
 
             if (! $id) {
                 $new = true;
@@ -145,6 +150,10 @@ class Scheduler
 //        }, $old));
 
         foreach ($old as $item) {
+            if (get_post_meta($item->post_id, '_crawl_desync', true) === 'on'){
+                continue;
+            }
+
             wp_delete_post($item->post_id, true);
         }
 
